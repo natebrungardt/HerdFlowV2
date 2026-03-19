@@ -88,11 +88,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/natebrungardt/HerdFlowV2/backend-dotnet/HerdFlow.Api/HerdFlow.Api.csproj",
+      "projectUniqueName": "/Users/natebrungardt/HerdFlowV2/backend/HerdFlow.Api/HerdFlow.Api.csproj",
       "projectName": "HerdFlow.Api",
-      "projectPath": "/Users/natebrungardt/HerdFlowV2/backend-dotnet/HerdFlow.Api/HerdFlow.Api.csproj",
+      "projectPath": "/Users/natebrungardt/HerdFlowV2/backend/HerdFlow.Api/HerdFlow.Api.csproj",
       "packagesPath": "/Users/natebrungardt/.nuget/packages/",
-      "outputPath": "/Users/natebrungardt/HerdFlowV2/backend-dotnet/HerdFlow.Api/obj/",
+      "outputPath": "/Users/natebrungardt/HerdFlowV2/backend/HerdFlow.Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/natebrungardt/.nuget/NuGet/NuGet.Config"
