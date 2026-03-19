@@ -1,0 +1,6 @@
+@HerdFlow.Api_HostAddress = http://localhost:5062
+
+GET {{HerdFlow.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
