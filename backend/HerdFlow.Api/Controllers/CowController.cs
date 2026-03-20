@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using HerdFlow.Api.DTOs;
-using HerdFlow.Api.Models;
+using HerdFlow.Api.Services;
 
 namespace HerdFlow.Api.Controllers;
 
@@ -8,6 +8,13 @@ namespace HerdFlow.Api.Controllers;
 [Route("api/cow")]
 public class CowController : ControllerBase
 {
+    private readonly CowService _cowService;
+
+    public CowController()
+    {
+        _cowService = new CowService();
+    }
+
     [HttpGet]
     public IActionResult GetCows()
     {
@@ -22,20 +29,7 @@ public class CowController : ControllerBase
     [HttpPost]
     public IActionResult CreateCow([FromBody] CreateCowDto dto)
     {
-        var cow = new Cow
-        {
-            Id = 1,
-            TagNumber = dto.TagNumber,
-            Breed = dto.Breed,
-            HealthStatus = dto.HealthStatus,
-            HeatStatus = dto.HeatStatus,
-            BreedingStatus = dto.BreedingStatus,
-            OwnerName = dto.OwnerName,
-            DateOfBirth = dto.DateOfBirth,
-            PurchasePrice = dto.PurchasePrice,
-            SalePrice = dto.SalePrice
-        };
-
+        var cow = _cowService.CreateCow(dto);
         return Ok(cow);
     }
 }
