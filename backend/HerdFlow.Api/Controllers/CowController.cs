@@ -10,19 +10,15 @@ public class CowController : ControllerBase
 {
     private readonly CowService _cowService;
 
-    public CowController()
+    public CowController(CowService cowService)
     {
-        _cowService = new CowService();
+        _cowService = cowService;
     }
 
     [HttpGet]
     public IActionResult GetCows()
     {
-        var cows = new[]
-        {
-            new { Id = 1, Name = "Bessie" },
-            new { Id = 2, Name = "Mooana" }
-        };
+        var cows = _cowService.GetCows();
 
         return Ok(cows);
     }
