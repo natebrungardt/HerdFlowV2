@@ -21,9 +21,26 @@ async function parseError(response: Response): Promise<ApiError> {
   try {
     const data = await response.json();
 
+    if (data.message) {
+      return {
+        status: response.status,
+        message: data.message,
+      };
+    }
+
+    if (data.errors) {
+      const firstKey = Object.keys(data.errors)[0];
+      const firstError = data.errors[firstKey][0];
+
+      return {
+        status: response.status,
+        message: firstError,
+      };
+    }
+
     return {
       status: response.status,
-      message: data.message ?? "Request failed",
+      message: "Request failed",
     };
   } catch {
     return {

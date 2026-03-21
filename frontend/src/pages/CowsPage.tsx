@@ -84,6 +84,8 @@ function CowsPage() {
 
       {loading ? (
         <p>Loading cows...</p>
+      ) : loadError ? (
+        <p>{loadError}</p>
       ) : cows.length === 0 ? (
         <p>No cows found.</p>
       ) : (
