@@ -2,21 +2,49 @@ import type { Cow } from "../types/cow";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
+if (!API_BASE_URL) {
+  throw new Error("VITE_API_URL is not configured");
+}
+
+type CreateCowInput = {
+  tagNumber: string;
+  breed: string;
+  healthStatus: string;
+};
+
+type ApiError = {
+  status?: number;
+  message: string;
+};
+
+async function parseError(response: Response): Promise<ApiError> {
+  try {
+    const data = await response.json();
+
+    return {
+      status: response.status,
+      message: data.message ?? "Request failed",
+    };
+  } catch {
+    return {
+      status: response.status,
+      message: "Request failed",
+    };
+  }
+}
+
 export async function getCows(): Promise<Cow[]> {
   const response = await fetch(API_BASE_URL);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch cows");
+    const error = await parseError(response);
+    throw new Error(error.message);
   }
 
   return response.json();
 }
 
-export async function createCow(cowData: {
-  tagNumber: string;
-  breed: string;
-  healthStatus: string;
-}) {
+export async function createCow(cowData: CreateCowInput): Promise<Cow> {
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: {
@@ -32,7 +60,8 @@ export async function createCow(cowData: {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create cow");
+    const error = await parseError(response);
+    throw new Error(error.message);
   }
 
   return response.json();

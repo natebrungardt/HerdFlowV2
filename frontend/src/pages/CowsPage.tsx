@@ -5,7 +5,8 @@ import type { Cow } from "../types/cow";
 function CowsPage() {
   const [cows, setCows] = useState<Cow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [submitError, setSubmitError] = useState("");
   const [tagNumber, setTagNumber] = useState("");
   const [breed, setBreed] = useState("");
   const [healthStatus, setHealthStatus] = useState("");
@@ -13,10 +14,13 @@ function CowsPage() {
   useEffect(() => {
     async function loadCows() {
       try {
+        setLoadError("");
         const data = await getCows();
         setCows(data);
       } catch (err) {
-        setError("Failed to load cows");
+        const message =
+          err instanceof Error ? err.message : "Failed to load cows";
+        setLoadError(message);
       } finally {
         setLoading(false);
       }
@@ -29,6 +33,8 @@ function CowsPage() {
     e.preventDefault();
 
     try {
+      setSubmitError("");
+
       const newCow = await createCow({
         tagNumber,
         breed,
@@ -40,12 +46,11 @@ function CowsPage() {
       setBreed("");
       setHealthStatus("");
     } catch (err) {
-      setError("Failed to create cow");
+      const message =
+        err instanceof Error ? err.message : "Failed to create cow";
+      setSubmitError(message);
     }
   }
-
-  if (loading) return <p>Loading cows...</p>;
-  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -73,7 +78,13 @@ function CowsPage() {
         />
         <button type="submit">Add Cow</button>
       </form>
-      {cows.length === 0 ? (
+
+      {submitError && <p>{submitError}</p>}
+      {loadError && <p>{loadError}</p>}
+
+      {loading ? (
+        <p>Loading cows...</p>
+      ) : cows.length === 0 ? (
         <p>No cows found.</p>
       ) : (
         <ul>
