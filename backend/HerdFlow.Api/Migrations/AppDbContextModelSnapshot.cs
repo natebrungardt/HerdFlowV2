@@ -41,6 +41,9 @@ namespace HerdFlow.Api.Migrations
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<DateOnly?>("HarvestDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("HealthStatus")
                         .IsRequired()
                         .HasColumnType("text");
@@ -49,14 +52,32 @@ namespace HerdFlow.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("OwnerName")
+                    b.Property<string>("LivestockGroup")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("PurchaseDate")
+                        .HasColumnType("date");
 
                     b.Property<decimal?>("PurchasePrice")
                         .HasColumnType("numeric");
 
+                    b.Property<DateOnly?>("SaleDate")
+                        .HasColumnType("date");
+
                     b.Property<decimal?>("SalePrice")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("TagNumber")
                         .IsRequired()

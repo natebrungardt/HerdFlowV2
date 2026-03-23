@@ -1,5 +1,5 @@
-using HerdFlow.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using HerdFlow.Api.Models;
 
 namespace HerdFlow.Api.Data;
 
@@ -9,5 +9,14 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<Cow> Cows {get; set;}
+    public DbSet<Cow> Cows { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Cow>()
+            .Property(c => c.HealthStatus)
+            .HasConversion<string>();
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

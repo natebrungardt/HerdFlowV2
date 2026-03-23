@@ -16,17 +16,22 @@ public class CowService
     {
         var cow = new Cow
         {
-            TagNumber = dto.TagNumber.Trim(),
+            TagNumber = dto.TagNumber,
+            OwnerName = dto.OwnerName,
+            LivestockGroup = dto.LivestockGroup,
+            Sex = dto.Sex,
             Breed = dto.Breed,
+            DateOfBirth = dto.DateOfBirth,
             HealthStatus = dto.HealthStatus,
             HeatStatus = dto.HeatStatus,
             BreedingStatus = dto.BreedingStatus,
-            OwnerName = dto.OwnerName,
-            DateOfBirth = dto.DateOfBirth,
             PurchasePrice = dto.PurchasePrice,
-            SalePrice = dto.SalePrice
+            SalePrice = dto.SalePrice,
+            PurchaseDate = dto.PurchaseDate,
+            SaleDate = dto.SaleDate,
+            Notes = dto.Notes,
+            HarvestDate = dto.HarvestDate
         };
-
         _context.Cows.Add(cow);
         _context.SaveChanges();
         return cow;
