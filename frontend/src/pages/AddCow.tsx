@@ -139,17 +139,26 @@ function AddCowPage() {
                 >
                   <button
                     type="button"
-                    className="deleteButton"
+                    className="addCowButton"
                     onClick={() => navigate("/cows")}
-                    style={{ background: "rgba(255, 255, 255, 0.08)" }}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid rgba(199, 70, 82, 0.18)",
+                      color: "#d36b74",
+                    }}
                   >
                     Cancel
                   </button>
 
                   <button
                     type="submit"
-                    className="deleteButton"
+                    className="addCowButton"
                     disabled={saving}
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #5fbf7a 0%, #3d8b40 100%)",
+                      boxShadow: "0 12px 28px rgba(76, 175, 80, 0.35)",
+                    }}
                   >
                     {saving ? "Saving..." : "Save Cow"}
                   </button>
@@ -161,24 +170,84 @@ function AddCowPage() {
                   <label className="metricLabel" htmlFor="healthStatus">
                     Health Status
                   </label>
-                  <select
-                    id="healthStatus"
-                    name="healthStatus"
-                    className="infoValue"
-                    value={formData.healthStatus}
-                    onChange={handleChange}
+                  <div
                     style={{
+                      marginTop: "8px",
+                      display: "flex",
+                      gap: "8px",
                       width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    <option value="Healthy">Healthy</option>
-                    <option value="NeedsTreatment">Needs Treatment</option>
-                  </select>
-                  <div className="metricAccent" />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          healthStatus: "Healthy",
+                        }))
+                      }
+                      style={{
+                        height: "60px",
+                        flex: 1,
+                        padding: "8px 1px",
+                        borderRadius: "12px",
+                        border: "none",
+                        minWidth: "100px",
+                        background:
+                          formData.healthStatus === "Healthy"
+                            ? "linear-gradient(180deg, #4caf50 0%, #3d8b40 100%)"
+                            : "rgba(255,255,255,0.12)",
+                        color: "#ffffff",
+                        fontWeight: 700,
+                        fontSize: "0.95rem",
+                        cursor: "pointer",
+                        boxShadow:
+                          formData.healthStatus === "Healthy"
+                            ? "0 10px 25px rgba(76, 175, 80, 0.22)"
+                            : "none",
+                        transition:
+                          "transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease",
+                      }}
+                    >
+                      Healthy
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          healthStatus: "NeedsTreatment",
+                        }))
+                      }
+                      style={{
+                        height: "60px",
+                        flex: 1,
+                        padding: "8px 1px",
+                        borderRadius: "12px",
+                        border: "none",
+                        minWidth: "100px",
+                        background:
+                          formData.healthStatus === "NeedsTreatment"
+                            ? "linear-gradient(180deg, #c74652 0%, #9f2e39 100%)"
+                            : "rgba(255,255,255,0.12)",
+                        color: "#ffffff",
+                        fontWeight: 700,
+                        fontSize: "0.95rem",
+                        cursor: "pointer",
+                        boxShadow:
+                          formData.healthStatus === "NeedsTreatment"
+                            ? "0 10px 25px rgba(217, 76, 87, 0.22)"
+                            : "none",
+                        transition:
+                          "transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease",
+                      }}
+                    >
+                      Needs Treatment
+                    </button>
+                  </div>
                 </div>
 
                 <div className="metricCard">
@@ -193,6 +262,7 @@ function AddCowPage() {
                     onChange={handleChange}
                     required
                     style={{
+                      marginTop: "15px",
                       width: "100%",
                       background: "transparent",
                       border: "none",
@@ -201,11 +271,11 @@ function AddCowPage() {
                     }}
                   >
                     <option value="">Select group</option>
-                    <option value="Breeding Cow">Breeding Cow</option>
-                    <option value="Market Cow">Market Cow</option>
-                    <option value="Feeder Cow">Feeder Cow</option>
+                    <option value="Breeding Cow">Breeding</option>
+                    <option value="Market Cow">Market</option>
+                    <option value="Feeder Cow">Feeder</option>
                   </select>
-                  <div className="metricAccent" />
+                  <div className="metricAccent" style={{ marginTop: "4px" }} />
                 </div>
 
                 <div className="metricCard">
@@ -219,6 +289,7 @@ function AddCowPage() {
                     value={formData.breedingStatus}
                     onChange={handleChange}
                     style={{
+                      marginTop: "15px",
                       width: "100%",
                       background: "transparent",
                       border: "none",
@@ -232,7 +303,7 @@ function AddCowPage() {
                     <option value="Pregnant">Pregnant</option>
                     <option value="N/A">N/A</option>
                   </select>
-                  <div className="metricAccent" />
+                  <div className="metricAccent" style={{ marginTop: "4px" }} />
                 </div>
               </div>
             </section>
