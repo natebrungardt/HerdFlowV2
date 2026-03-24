@@ -19,7 +19,7 @@ public class Cow
     public DateOnly? DateOfBirth { get; set; }
     [Required]
     public HealthStatusType HealthStatus { get; set; } = HealthStatusType.Healthy;
-    public HeatStatusType HeatStatus { get; set; }
+    public HeatStatusType? HeatStatus { get; set; }
     public string? BreedingStatus { get; set; }
 
     public decimal? PurchasePrice { get; set; }
@@ -27,6 +27,6 @@ public class Cow
     public DateOnly? PurchaseDate { get; set; }
     public DateOnly? SaleDate { get; set; }
 
-    public string? Notes { get; set; }
+    public List<Note> Notes { get; set; } = new();
     public bool IsRemoved { get; set; } = false;
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HerdFlow.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260324201249_InitialCleanV2")]
-    partial class InitialCleanV2
+    [Migration("20260324223221_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,17 +46,14 @@ namespace HerdFlow.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("HeatStatus")
-                        .HasColumnType("text");
+                    b.Property<int>("HeatStatus")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsRemoved")
                         .HasColumnType("boolean");
 
                     b.Property<int>("LivestockGroup")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
 
                     b.Property<string>("OwnerName")
                         .IsRequired()
@@ -87,6 +84,45 @@ namespace HerdFlow.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Cows");
+                });
+
+            modelBuilder.Entity("HerdFlow.Api.Models.Note", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CowId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CowId");
+
+                    b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("HerdFlow.Api.Models.Note", b =>
+                {
+                    b.HasOne("HerdFlow.Api.Models.Cow", null)
+                        .WithMany("Notes")
+                        .HasForeignKey("CowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HerdFlow.Api.Models.Cow", b =>
+                {
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }

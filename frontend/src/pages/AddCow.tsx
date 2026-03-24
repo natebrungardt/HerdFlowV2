@@ -89,7 +89,7 @@ function AddCowPage() {
         breed: formData.breed,
         sex: formData.sex,
         healthStatus: formData.healthStatus || "Healthy",
-        heatStatus: formData.heatStatus || null,
+        heatStatus: formData.heatStatus === "" ? null : formData.heatStatus,
         breedingStatus: formData.breedingStatus || null,
         livestockGroup: formData.livestockGroup,
         dateOfBirth: formData.dateOfBirth || null,
@@ -139,7 +139,24 @@ function AddCowPage() {
 
               <div className="heroHeader">
                 <div className="titleBlock">
-                  <h1 className="cowTitle">Add New Cow</h1>
+                  <input
+                    name="tagNumber"
+                    value={formData.tagNumber}
+                    onChange={handleChange}
+                    required
+                    placeholder="Tag #"
+                    className="cowTitle"
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      color: "inherit",
+                      font: "inherit",
+                      fontSize: "2rem",
+                      fontWeight: 700,
+                      width: "100%",
+                    }}
+                  />
                   <p className="cowSubtitle">
                     Create a new herd record with ownership, lifecycle, and
                     status details.
@@ -335,28 +352,6 @@ function AddCowPage() {
 
               <div className="infoGrid">
                 <div className="infoTile">
-                  <label className="infoLabel" htmlFor="tagNumber">
-                    Tag Number
-                  </label>
-                  <input
-                    id="tagNumber"
-                    name="tagNumber"
-                    className="infoValue"
-                    value={formData.tagNumber}
-                    onChange={handleChange}
-                    placeholder="Enter tag number"
-                    required
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
                   <label className="infoLabel" htmlFor="ownerName">
                     Owner
                   </label>
@@ -444,9 +439,9 @@ function AddCowPage() {
                     }}
                   >
                     <option value="">Select heat status</option>
+                    <option value="WatchHeat">Watch Heat</option>
                     <option value="InHeat">In Heat</option>
                     <option value="NotInHeat">Not In Heat</option>
-                    <option value="Unknown">Unknown</option>
                   </select>
                 </div>
 
@@ -633,20 +628,6 @@ function AddCowPage() {
                   <span className="kpiLabel">Sale Price</span>
                   <span className="kpiValue">
                     {formatCurrencyPreview(formData.salePrice)}
-                  </span>
-                </div>
-
-                <div className="kpiRow">
-                  <span className="kpiLabel">Status</span>
-                  <span className="kpiValue">
-                    {formData.breedingStatus || "—"}
-                  </span>
-                </div>
-
-                <div className="kpiRow">
-                  <span className="kpiLabel">Tag Number</span>
-                  <span className="kpiValue">
-                    {formData.tagNumber ? `#${formData.tagNumber}` : "—"}
                   </span>
                 </div>
               </div>

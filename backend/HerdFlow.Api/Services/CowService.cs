@@ -51,7 +51,6 @@ public class CowService
         cow.SalePrice = dto.SalePrice;
         cow.PurchaseDate = dto.PurchaseDate;
         cow.SaleDate = dto.SaleDate;
-        cow.Notes = dto.Notes;
 
         _context.SaveChanges();
 
@@ -76,7 +75,6 @@ public class CowService
             SalePrice = dto.SalePrice,
             PurchaseDate = dto.PurchaseDate,
             SaleDate = dto.SaleDate,
-            Notes = dto.Notes,
         };
         _context.Cows.Add(cow);
         _context.SaveChanges();

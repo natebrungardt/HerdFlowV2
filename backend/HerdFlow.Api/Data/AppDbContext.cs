@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Cow> Cows { get; set; }
 
+    public DbSet<Note> Notes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cow>()
