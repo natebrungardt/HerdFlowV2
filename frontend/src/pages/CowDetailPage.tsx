@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getCowById } from "../services/cowService";
+import { useNavigate, useParams } from "react-router-dom";
+import { getCowById, deleteCow } from "../services/cowService";
 import type { Cow } from "../types/cow";
 
 function CowDetailPage() {
@@ -8,6 +8,7 @@ function CowDetailPage() {
   const [cow, setCow] = useState<Cow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadCow() {
@@ -27,6 +28,23 @@ function CowDetailPage() {
     loadCow();
   }, [id]);
 
+  async function handleDelete() {
+    if (!cow) return;
+
+    const confirmed = window.confirm(`Delete cow with tag #${cow.tagNumber}?`);
+
+    if (!confirmed) return;
+
+    try {
+      await deleteCow(cow.id);
+      navigate("/cows");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete cow";
+      setError(message);
+    }
+  }
+
   if (loading) return <p>Loading cow...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!cow) return <p>Cow not found</p>;
@@ -35,11 +53,12 @@ function CowDetailPage() {
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
       {/* NAVBAR */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        <div style={navBox}>{cow.tagNumber}</div>
-        <div style={navBox}>{cow.healthStatus}</div>
-        <div style={navBox}>{cow.livestockGroup}</div>
-        <div style={navAction}>+ Add Cow</div>
-        <div style={navAction}>Remove</div>
+        <div style={navBox}>Tag #: {cow.tagNumber}</div>
+        <div style={navBox}>Health: {cow.healthStatus}</div>
+        <div style={navBox}>Group: {cow.livestockGroup}</div>
+        <div style={navAction} onClick={handleDelete}>
+          Remove
+        </div>
       </div>
 
       {/* MAIN GRID */}
