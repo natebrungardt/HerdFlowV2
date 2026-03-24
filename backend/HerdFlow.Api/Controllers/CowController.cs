@@ -7,7 +7,7 @@ using Npgsql;
 namespace HerdFlow.Api.Controllers;
 
 [ApiController]
-[Route("api/cow")]
+[Route("api/cows")]
 public class CowController : ControllerBase
 {
     private readonly CowService _cowService;

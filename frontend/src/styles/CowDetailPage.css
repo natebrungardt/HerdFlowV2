@@ -237,11 +237,10 @@
 }
 
 .notesBody {
-  min-height: 168px;
-  color: #c3cad9;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-word;
+  max-height: 720px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
 }
 
 .activityCard {
@@ -347,4 +346,167 @@
 .infoTile:hover {
   background: rgba(255, 255, 255, 0.03);
   cursor: pointer;
+}
+.notesContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 8px);
+}
+
+.notesBody {
+  flex: 1;
+  max-height: 650px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 140, 180, 0.4) transparent;
+}
+
+.notesBody::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notesBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notesBody::-webkit-scrollbar-thumb {
+  background: rgba(120, 140, 180, 0.4);
+  border-radius: 6px;
+}
+
+.notesBody::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 140, 180, 0.6);
+}
+
+.noteItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 14px;
+  margin-bottom: 8px;
+
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+
+  color: #e6ebff;
+  font-size: 0.9rem;
+}
+
+.noteContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  font-size: 1.2rem;
+}
+
+.noteContent input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e6ebff;
+  font-size: 1.5rem;
+  font-family: inherit;
+  width: 100%;
+  line-height: 1.4;
+  padding: 0;
+}
+
+.noteContent textarea {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e6ebff;
+  font-size: 1.2rem;
+  font-family: inherit;
+  width: 100%;
+  resize: none;
+  line-height: 1.4;
+  padding: 0;
+}
+
+.noteContent input {
+  min-height: 2.5em;
+}
+
+.noteContent input::selection {
+  background: rgba(76, 122, 91, 0.4);
+}
+
+.noteContent span {
+  word-break: break-word;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.noteTimestamp {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.noteItem button {
+  background: transparent;
+  border: none;
+  color: #9aa6c2;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.noteItem button:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.addNoteRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  padding-bottom: 2px;
+  font-size: 1.2rem;
+}
+
+.addNoteRow textarea {
+  flex: 1;
+  padding: 12px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+  color: #e6ebff;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  outline: none;
+  min-height: 64px;
+  font-size: 1.2rem;
+}
+
+.addNoteRow textarea::placeholder {
+  color: #8f99b2;
+  font-size: 1.2rem;
+}
+
+.addNoteRow textarea:focus {
+  border-color: rgba(76, 122, 91, 0.6);
+  box-shadow: 0 0 0 1px rgba(76, 122, 91, 0.3);
+}
+
+.addNoteRow button {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(180deg, #4c7a5b 0%, #3f684d 100%);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+.noteItem:first-child {
+  border-color: rgba(76, 122, 91, 0.4);
 }

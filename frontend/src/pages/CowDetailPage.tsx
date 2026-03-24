@@ -8,6 +8,7 @@ import {
 } from "../services/cowService";
 import type { Cow } from "../types/cow";
 import "../styles/CowDetailPage.css";
+import Notes from "../components/Notes";
 
 function formatValue(value: string | number | null | undefined) {
   if (value === null || value === undefined || value === "") return "—";
@@ -39,7 +40,7 @@ function CowDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Cow | null>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
 
@@ -759,23 +760,7 @@ function CowDetailPage() {
                 </div>
               </div>
             </section>
-
-            <section className="dashboardCard">
-              <div className="dataCardHeader">
-                <h2 className="cardTitle">Notes</h2>
-                <span className="cardSubtle">Internal record</span>
-              </div>
-
-              <div className="notesBody">
-                {cow.notes ? (
-                  cow.notes
-                ) : (
-                  <span className="emptyState">
-                    No notes have been added yet.
-                  </span>
-                )}
-              </div>
-            </section>
+            <Notes cowId={cow.id} />
           </div>
         </div>
       </div>
