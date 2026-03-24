@@ -14,13 +14,13 @@ public class Cow
     public string OwnerName { get; set; } = null!;
     [Required]
     public string LivestockGroup { get; set; } = null!;
-    public string Sex { get; set; } = null!;
-    public string Breed { get; set; } = null!;
+    public string? Sex { get; set; }
+    public string? Breed { get; set; }
     public DateOnly? DateOfBirth { get; set; }
     [Required]
     public HealthStatusType HealthStatus { get; set; } = HealthStatusType.Healthy;
-    public string HeatStatus { get; set; } = null!;
-    public string BreedingStatus { get; set; } = null!;
+    public string? HeatStatus { get; set; }
+    public string? BreedingStatus { get; set; }
 
     public decimal? PurchasePrice { get; set; }
     public decimal? SalePrice { get; set; }
@@ -28,5 +28,4 @@ public class Cow
     public DateOnly? SaleDate { get; set; }
 
     public string? Notes { get; set; }
-    public DateOnly? HarvestDate { get; set; }
 }

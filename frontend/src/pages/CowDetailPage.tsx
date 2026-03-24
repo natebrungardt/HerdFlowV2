@@ -56,7 +56,9 @@ function CowDetailPage() {
   async function handleDelete() {
     if (!cow) return;
 
-    const confirmed = window.confirm(`Delete cow with tag #${cow.tagNumber}?`);
+    const confirmed = window.confirm(
+      `Delete cow with tag #${cow.tagNumber}? If removed, this cow's record will be moved to the removed cows archive.'`,
+    );
 
     if (!confirmed) return;
 

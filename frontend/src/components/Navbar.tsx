@@ -12,6 +12,7 @@ function Navbar() {
         <Link to="/breeding">Breeding</Link>
         <Link to="/health">Health</Link>
         <Link to="/finances">Finances</Link>
+        <Link to="/removed-cows">Removed Cows</Link>
       </div>
     </div>
   );

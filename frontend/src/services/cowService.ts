@@ -8,8 +8,19 @@ if (!API_BASE_URL) {
 
 type CreateCowInput = {
   tagNumber: string;
+  ownerName: string;
+  livestockGroup: string;
   breed: string;
+  sex: string;
   healthStatus: string;
+  heatStatus: string | null;
+  breedingStatus: string | null;
+  dateOfBirth: string | null;
+  purchaseDate: string | null;
+  saleDate: string | null;
+  purchasePrice: number | null;
+  salePrice: number | null;
+  notes: string | null;
 };
 
 type ApiError = {
@@ -69,10 +80,19 @@ export async function createCow(cowData: CreateCowInput): Promise<Cow> {
     },
     body: JSON.stringify({
       tagNumber: cowData.tagNumber,
+      ownerName: cowData.ownerName,
+      livestockGroup: cowData.livestockGroup,
+      sex: cowData.sex,
       breed: cowData.breed,
+      dateOfBirth: cowData.dateOfBirth,
       healthStatus: cowData.healthStatus,
-      heatStatus: "Not In Heat",
-      breedingStatus: "Open",
+      heatStatus: cowData.heatStatus,
+      breedingStatus: cowData.breedingStatus,
+      purchasePrice: cowData.purchasePrice,
+      salePrice: cowData.salePrice,
+      purchaseDate: cowData.purchaseDate,
+      saleDate: cowData.saleDate,
+      notes: cowData.notes,
     }),
   });
 

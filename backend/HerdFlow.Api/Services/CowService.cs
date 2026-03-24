@@ -32,17 +32,17 @@ public class CowService
         cow.TagNumber = dto.TagNumber;
         cow.OwnerName = dto.OwnerName;
         cow.LivestockGroup = dto.LivestockGroup;
-        cow.Breed = dto.Breed;
-        cow.HealthStatus = dto.HealthStatus;
-        cow.BreedingStatus = dto.BreedingStatus;
         cow.Sex = dto.Sex;
+        cow.Breed = dto.Breed;
         cow.DateOfBirth = dto.DateOfBirth;
-        cow.Notes = dto.Notes;
-
+        cow.HealthStatus = dto.HealthStatus;
+        cow.HeatStatus = dto.HeatStatus;
+        cow.BreedingStatus = dto.BreedingStatus;
         cow.PurchasePrice = dto.PurchasePrice;
         cow.SalePrice = dto.SalePrice;
         cow.PurchaseDate = dto.PurchaseDate;
         cow.SaleDate = dto.SaleDate;
+        cow.Notes = dto.Notes;
 
         _context.SaveChanges();
 
@@ -66,7 +66,6 @@ public class CowService
             PurchaseDate = dto.PurchaseDate,
             SaleDate = dto.SaleDate,
             Notes = dto.Notes,
-            HarvestDate = dto.HarvestDate
         };
         _context.Cows.Add(cow);
         _context.SaveChanges();
