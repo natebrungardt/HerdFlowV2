@@ -1,12 +1,18 @@
 export type Cow = {
   id: number;
   tagNumber: string;
+  ownerName: string;
+  livestockGroup: string;
+  sex: string;
   breed: string;
-  healthStatus: "Healthy" | "NeedsTreatment";
+  dateOfBirth?: string | null;
+  healthStatus: string;
   heatStatus: string;
   breedingStatus: string;
-  ownerName?: string | null;
-  dateOfBirth?: string | null;
   purchasePrice?: number | null;
   salePrice?: number | null;
+  purchaseDate?: string | null;
+  saleDate?: string | null;
+  notes?: string | null;
+  harvestDate?: string | null;
 };

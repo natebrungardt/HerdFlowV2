@@ -55,9 +55,22 @@ function AllCowPage() {
               }}
             >
               <div>
-                <strong>Tag:</strong> {cow.tagNumber}
-                <br />
-                <strong>Owner:</strong> {cow.ownerName}
+                {" "}
+                <div>
+                  <strong>Tag:</strong> {cow.tagNumber}
+                </div>
+                <div>
+                  <strong>Group:</strong> {cow.livestockGroup}
+                </div>
+                <div>
+                  <strong>Sex:</strong> {cow.sex}
+                </div>
+                <div>
+                  <strong>Breeding Status:</strong> {cow.breedingStatus}
+                </div>
+                <div>
+                  <strong>Owner:</strong> {cow.ownerName}
+                </div>
               </div>
 
               <div
