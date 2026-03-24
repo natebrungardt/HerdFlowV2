@@ -399,8 +399,10 @@ function AddCowPage() {
                     }}
                   >
                     <option value="">Select sex</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="Cow">Cow</option>
+                    <option value="Bull">Bull</option>
+                    <option value="Heifer">Heifer</option>
+                    <option value="Steer">Steer</option>
                   </select>
                 </div>
 
