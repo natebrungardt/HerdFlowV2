@@ -160,10 +160,10 @@ function AllCowPage() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ fontSize: "1.4rem", color: "#9aa5b1" }}>
+            <div style={{ fontSize: "1.15rem", color: "#9aa5b1" }}>
               Total Cows
             </div>
-            <div style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
               {cows.length}
             </div>
           </div>
@@ -177,8 +177,8 @@ function AllCowPage() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ fontSize: "1.4rem", color: "#9aa5b1" }}>Healthy</div>
-            <div style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
+            <div style={{ fontSize: "1.15rem", color: "#9aa5b1" }}>Healthy</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
               {healthyCount}
             </div>
           </div>
@@ -192,10 +192,10 @@ function AllCowPage() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ fontSize: "1.4rem", color: "#9aa5b1" }}>
+            <div style={{ fontSize: "1.15rem", color: "#9aa5b1" }}>
               Needs Treatment
             </div>
-            <div style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
               {needsAttentionCount}
             </div>
           </div>
@@ -208,8 +208,10 @@ function AllCowPage() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ fontSize: "1.4rem", color: "#9aa5b1" }}>Breeding</div>
-            <div style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
+            <div style={{ fontSize: "1.15rem", color: "#9aa5b1" }}>
+              Breeding
+            </div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
               {breedingCount}
             </div>
           </div>
@@ -222,8 +224,8 @@ function AllCowPage() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ fontSize: "1.4rem", color: "#9aa5b1" }}>Feeder</div>
-            <div style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
+            <div style={{ fontSize: "1.15rem", color: "#9aa5b1" }}>Feeder</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
               {feederCount}
             </div>
           </div>
@@ -236,7 +238,7 @@ function AllCowPage() {
               border: "1px solid #333",
             }}
           >
-            <div style={{ fontSize: "1.4rem", color: "#9aa5b1" }}>Market</div>
+            <div style={{ fontSize: "1.15rem", color: "#9aa5b1" }}>Market</div>
             <div style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
               {marketCount}
             </div>

@@ -1,7 +1,32 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCowById, deleteCow } from "../services/cowService";
+import { deleteCow, getCowById } from "../services/cowService";
 import type { Cow } from "../types/cow";
+import "../../CowDetailPage.css";
+
+function formatValue(value: string | number | null | undefined) {
+  if (value === null || value === undefined || value === "") return "—";
+  return String(value);
+}
+
+function formatLabel(value: string | null | undefined) {
+  if (!value) return "—";
+  return value.replace(/([A-Z])/g, " $1").trim();
+}
+
+function formatCurrency(value: number | null | undefined) {
+  if (value === null || value === undefined) return "—";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function getOwnerInitial(name: string | null | undefined) {
+  if (!name) return "?";
+  return name.trim().charAt(0).toUpperCase() || "?";
+}
 
 function CowDetailPage() {
   const { id } = useParams();
@@ -50,105 +75,221 @@ function CowDetailPage() {
   if (!cow) return <p>Cow not found</p>;
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
-      {/* NAVBAR */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        <div style={navBox}>Tag #: {cow.tagNumber}</div>
-        <div style={navBox}>Health: {cow.healthStatus}</div>
-        <div style={navBox}>Group: {cow.livestockGroup}</div>
-        <div style={navAction} onClick={handleDelete}>
-          Remove
-        </div>
-      </div>
+    <div className="cowDetailPage">
+      <div className="cowDetailShell">
+        <div className="cowDashboardGrid">
+          <div className="leftColumn">
+            <section className="dashboardCard heroCard">
+              <div className="eyebrow">Cow Overview</div>
 
-      {/* MAIN GRID */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 2fr 1fr",
-          gap: "20px",
-        }}
-      >
-        {/* LEFT PANEL */}
-        <div style={panel}>
-          <p>
-            <strong>Purchase Price:</strong> {cow.purchasePrice}
-          </p>
-          <p>
-            <strong>Sale Price:</strong> {cow.salePrice}
-          </p>
-          <p>
-            <strong>Purchase Date:</strong> {cow.purchaseDate}
-          </p>
-          <p>
-            <strong>Sale Date:</strong> {cow.saleDate}
-          </p>
-        </div>
+              <div className="heroHeader">
+                <div className="titleBlock">
+                  <h1 className="cowTitle">
+                    Tag #{formatValue(cow.tagNumber)}
+                  </h1>
+                  <p className="cowSubtitle">
+                    Detailed record for herd tracking, ownership, and lifecycle
+                    data.
+                  </p>
+                </div>
 
-        {/* CENTER PANEL */}
-        <div style={panel}>
-          <div style={field}>
-            <strong>Owner:</strong> {cow.ownerName}
+                <button className="deleteButton" onClick={handleDelete}>
+                  Remove Cow
+                </button>
+              </div>
+
+              <div className="metricsGrid">
+                <div className="metricCard">
+                  <div className="metricLabel">Health Status</div>
+                  <div className="metricValue">
+                    {formatLabel(cow.healthStatus)}
+                  </div>
+                  <div className="metricAccent" />
+                </div>
+
+                <div className="metricCard">
+                  <div className="metricLabel">Livestock Group</div>
+                  <div className="metricValue">
+                    {formatValue(cow.livestockGroup)}
+                  </div>
+                  <div className="metricAccent" />
+                </div>
+
+                <div className="metricCard">
+                  <div className="metricLabel">Breeding Status</div>
+                  <div className="metricValue">
+                    {formatValue(cow.breedingStatus)}
+                  </div>
+                  <div className="metricAccent" />
+                </div>
+              </div>
+            </section>
+
+            <section className="dashboardCard">
+              <div className="dataCardHeader">
+                <h2 className="cardTitle">Cow Details</h2>
+                <span className="cardSubtle">Profile information</span>
+              </div>
+
+              <div className="infoGrid">
+                <div className="infoTile">
+                  <div className="infoLabel">Owner</div>
+                  <div className="infoValue">{formatValue(cow.ownerName)}</div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Breed</div>
+                  <div className="infoValue">{formatValue(cow.breed)}</div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Sex</div>
+                  <div className="infoValue">{formatValue(cow.sex)}</div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Heat Status</div>
+                  <div className="infoValue">{formatValue(cow.heatStatus)}</div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Date of Birth</div>
+                  <div className="infoValue">
+                    {formatValue(cow.dateOfBirth)}
+                  </div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Purchase Date</div>
+                  <div className="infoValue">
+                    {formatValue(cow.purchaseDate)}
+                  </div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Sale Date</div>
+                  <div className="infoValue">{formatValue(cow.saleDate)}</div>
+                </div>
+
+                <div className="infoTile">
+                  <div className="infoLabel">Record ID</div>
+                  <div className="infoValue">#{cow.id}</div>
+                </div>
+              </div>
+            </section>
+
+            <section className="dashboardCard activityCard">
+              <div className="dataCardHeader">
+                <h2 className="cardTitle">Activity Log</h2>
+                <span className="cardSubtle">Recent timeline</span>
+              </div>
+
+              <div className="activityList">
+                <div className="activityItem">
+                  <div className="activityDot" />
+                  <div>
+                    <div className="activityText">
+                      Cow record created in HerdFlow.
+                    </div>
+                    <div className="activityMeta">System event</div>
+                  </div>
+                </div>
+
+                <div className="activityItem">
+                  <div className="activityDot" />
+                  <div>
+                    <div className="activityText">
+                      Health status saved as {formatLabel(cow.healthStatus)}.
+                    </div>
+                    <div className="activityMeta">Current profile value</div>
+                  </div>
+                </div>
+
+                <div className="activityItem">
+                  <div className="activityDot" />
+                  <div>
+                    <div className="activityText">
+                      Livestock group assigned to{" "}
+                      {formatValue(cow.livestockGroup)}.
+                    </div>
+                    <div className="activityMeta">
+                      Current herd classification
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
-          <div style={field}>
-            <strong>Health:</strong> {cow.healthStatus}
-          </div>
-          <div style={field}>
-            <strong>Breeding:</strong> {cow.breedingStatus}
-          </div>
-          <div style={field}>
-            <strong>Breed:</strong> {cow.breed}
-          </div>
-          <div style={field}>
-            <strong>Sex:</strong> {cow.sex}
-          </div>
-          <div style={field}>
-            <strong>DOB:</strong> {cow.dateOfBirth}
+
+          <div className="rightColumn">
+            <section className="dashboardCard rightSummaryCard">
+              <div className="dataCardHeader">
+                <h2 className="cardTitle">Profile Summary</h2>
+                <span className="cardSubtle">At a glance</span>
+              </div>
+
+              <div className="ownerRow">
+                <div className="ownerAvatar">
+                  {getOwnerInitial(cow.ownerName)}
+                </div>
+                <div className="ownerMeta">
+                  <div className="ownerName">{formatValue(cow.ownerName)}</div>
+                  <div className="ownerRole">Primary owner</div>
+                </div>
+              </div>
+
+              <div className="kpiStack">
+                <div className="kpiRow">
+                  <span className="kpiLabel">Purchase Price</span>
+                  <span className="kpiValue">
+                    {formatCurrency(cow.purchasePrice)}
+                  </span>
+                </div>
+
+                <div className="kpiRow">
+                  <span className="kpiLabel">Sale Price</span>
+                  <span className="kpiValue">
+                    {formatCurrency(cow.salePrice)}
+                  </span>
+                </div>
+
+                <div className="kpiRow">
+                  <span className="kpiLabel">Status</span>
+                  <span className="kpiValue">
+                    {formatValue(cow.breedingStatus)}
+                  </span>
+                </div>
+
+                <div className="kpiRow">
+                  <span className="kpiLabel">Tag Number</span>
+                  <span className="kpiValue">
+                    #{formatValue(cow.tagNumber)}
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <section className="dashboardCard">
+              <div className="dataCardHeader">
+                <h2 className="cardTitle">Notes</h2>
+                <span className="cardSubtle">Internal record</span>
+              </div>
+
+              <div className="notesBody">
+                {cow.notes ? (
+                  cow.notes
+                ) : (
+                  <span className="emptyState">
+                    No notes have been added yet.
+                  </span>
+                )}
+              </div>
+            </section>
           </div>
         </div>
-
-        {/* RIGHT PANEL */}
-        <div style={panel}>
-          <strong>Notes</strong>
-          <p>{cow.notes}</p>
-        </div>
-      </div>
-
-      {/* ACTIVITY LOG */}
-      <div style={{ marginTop: "30px", ...panel }}>
-        <h2>Activity Log</h2>
-        <p>Coming soon...</p>
       </div>
     </div>
   );
 }
-
-// styles
-const panel = {
-  border: "1px solid #ccc",
-  borderRadius: "10px",
-  padding: "15px",
-};
-
-const field = {
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  padding: "10px",
-  marginBottom: "10px",
-};
-
-const navBox = {
-  border: "1px solid #ccc",
-  borderRadius: "8px",
-  padding: "10px 15px",
-  fontWeight: "bold",
-};
-
-const navAction = {
-  border: "1px solid #ccc",
-  borderRadius: "8px",
-  padding: "10px 15px",
-  cursor: "pointer",
-};
 
 export default CowDetailPage;

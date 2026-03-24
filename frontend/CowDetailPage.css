@@ -1,0 +1,382 @@
+.cowDetailPage {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+  box-sizing: border-box;
+}
+
+.cowDetailShell {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(17, 20, 30, 0.96) 0%,
+    rgba(11, 14, 22, 0.98) 100%
+  );
+  border: 1px solid rgba(120, 144, 255, 0.18);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 0 40px rgba(63, 114, 255, 0.08);
+}
+
+.cowDetailShell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(98, 123, 255, 0.45),
+    rgba(98, 123, 255, 0.05),
+    rgba(255, 255, 255, 0.03)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.cowDashboardGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(290px, 0.95fr);
+  gap: 20px;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboardCard {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 24, 36, 0.98) 0%,
+    rgba(13, 16, 24, 0.98) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.heroCard {
+  padding: 22px;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #7f8aa3;
+  margin-bottom: 10px;
+}
+
+.heroHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.cowTitle {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #f3f6ff;
+}
+
+.cowSubtitle {
+  margin: 8px 0 0;
+  color: #95a0b8;
+  font-size: 0.96rem;
+}
+
+.deleteButton {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 170px;
+  background: linear-gradient(180deg, #d84c57 0%, #b93340 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(217, 76, 87, 0.22);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+.deleteButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 14px 30px rgba(217, 76, 87, 0.3);
+}
+
+.deleteButton:active {
+  transform: translateY(0);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.metricCard {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.metricLabel {
+  color: #8f99b2;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.metricValue {
+  color: #f5f7ff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+.metricAccent {
+  width: 54px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5b7cff 0%, #65d0ff 100%);
+  opacity: 0.95;
+}
+
+.dataCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cardTitle {
+  margin: 0;
+  color: #f3f6ff;
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.cardSubtle {
+  color: #7f8aa3;
+  font-size: 0.84rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.infoTile {
+  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.infoLabel {
+  color: #7f8aa3;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.infoValue {
+  color: #f0f4ff;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.rightSummaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ownerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ownerAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #5f7fff 0%, #7993ff 100%);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 10px 25px rgba(95, 127, 255, 0.24);
+  flex-shrink: 0;
+}
+
+.ownerMeta {
+  min-width: 0;
+}
+
+.ownerName {
+  color: #f4f7ff;
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.ownerRole {
+  color: #8c97ae;
+  font-size: 0.84rem;
+}
+
+.kpiStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kpiRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kpiLabel {
+  color: #8f99b2;
+  font-size: 0.88rem;
+}
+
+.kpiValue {
+  color: #f3f6ff;
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.notesBody {
+  min-height: 168px;
+  color: #c3cad9;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.activityCard {
+  min-height: 190px;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.activityItem:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.activityDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 6px;
+  background: linear-gradient(180deg, #5b7cff 0%, #65d0ff 100%);
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(101, 208, 255, 0.42);
+}
+
+.activityText {
+  color: #d6dceb;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.activityMeta {
+  color: #8390a8;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.emptyState {
+  color: #98a3b9;
+}
+
+@media (max-width: 1080px) {
+  .cowDashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsGrid,
+  .infoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .cowDetailPage {
+    padding: 20px 16px 28px;
+  }
+
+  .cowDetailShell {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .heroHeader {
+    flex-direction: column;
+  }
+
+  .deleteButton {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .metricsGrid,
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+}
