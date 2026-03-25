@@ -1032,6 +1032,7 @@ function CowDetailPage() {
         isOpen={showDeleteModal}
         title="Remove Cow"
         message={`Are you sure you want to remove cow #${cow.tagNumber}? This will move it to the removed cows archive.`}
+        confirmText="Remove Cow"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={() => {
           console.log("CONFIRM CLICKED");
@@ -1044,6 +1045,7 @@ function CowDetailPage() {
         isOpen={showRestoreModal}
         title="Restore Cow"
         message={`Are you sure you want to restore cow #${cow.tagNumber}? This will move it back to your active herd.`}
+        confirmText="Restore Cow"
         onCancel={() => setShowRestoreModal(false)}
         onConfirm={async () => {
           await handleRestore();

@@ -6,6 +6,7 @@ type ModalProps = {
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
+  confirmText?: string;
 };
 
 export default function Modal({
@@ -14,6 +15,7 @@ export default function Modal({
   message,
   onConfirm,
   onCancel,
+  confirmText,
 }: ModalProps) {
   if (!isOpen) return null;
 
@@ -33,14 +35,14 @@ export default function Modal({
             Cancel
           </button>
           <button
-            className="danger"
+            className={confirmText === "Restore Cow" ? "success" : "danger"}
             onClick={(e) => {
               e.stopPropagation();
               console.log("MODAL BUTTON CLICKED");
               onConfirm();
             }}
           >
-            Remove Cow
+            {confirmText || "Confirm"}
           </button>
         </div>
       </div>
