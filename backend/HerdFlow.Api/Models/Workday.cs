@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HerdFlow.Api.Models;
 
 public class Workday
 {
     public int Id { get; set; }
-
+    [Required]
+    [MaxLength(120)]
     public string Title { get; set; } = string.Empty; // "Workday 1"
 
     public DateTime Date { get; set; } = DateTime.UtcNow.Date;

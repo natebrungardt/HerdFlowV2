@@ -23,6 +23,7 @@ builder.Services.AddScoped<CowService>();
 builder.Services.AddScoped<ActivityLogService>();
 builder.Services.AddScoped<CowChangeLogService>();
 builder.Services.AddScoped<NoteService>();
+builder.Services.AddScoped<WorkdayService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
