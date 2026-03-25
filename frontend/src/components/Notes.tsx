@@ -6,6 +6,7 @@ import {
   type Note,
   updateNote,
 } from "../services/noteService";
+import Modal from "./Modal";
 
 type Props = {
   cowId: number;
@@ -18,6 +19,7 @@ function Notes({ cowId }: Props) {
   const [newNote, setNewNote] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
+  const [notePendingDelete, setNotePendingDelete] = useState<Note | null>(null);
 
   useEffect(() => {
     async function loadNotes() {
@@ -146,7 +148,7 @@ function Notes({ cowId }: Props) {
                   )}
                 </div>
 
-                <button onClick={() => handleDelete(note.id)}>✕</button>
+                <button onClick={() => setNotePendingDelete(note)}>✕</button>
               </div>
             ))
           )}
@@ -167,6 +169,19 @@ function Notes({ cowId }: Props) {
           <button onClick={handleAdd}>Add</button>
         </div>
       </div>
+
+      <Modal
+        isOpen={notePendingDelete !== null}
+        title="Delete Note"
+        message="Are you sure you want to delete this note?"
+        confirmText="Delete Note"
+        onCancel={() => setNotePendingDelete(null)}
+        onConfirm={async () => {
+          if (!notePendingDelete) return;
+          await handleDelete(notePendingDelete.id);
+          setNotePendingDelete(null);
+        }}
+      />
     </section>
   );
 }
