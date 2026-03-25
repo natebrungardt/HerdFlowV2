@@ -6,12 +6,19 @@ import {
   updateNote,
 } from "../services/noteService";
 
+type Note = {
+  id: number;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
+};
+
 type Props = {
   cowId: number;
 };
 
 function Notes({ cowId }: Props) {
-  const [notes, setNotes] = useState<any[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
@@ -42,7 +49,7 @@ function Notes({ cowId }: Props) {
     setNotes((prev) => prev.filter((n) => n.id !== noteId));
   }
 
-  function startEditing(note: any) {
+  function startEditing(note: Note) {
     setEditingId(note.id);
     setEditingContent(note.content);
   }

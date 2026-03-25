@@ -1,5 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import CowDetailsSection from "../components/CowDetailsSection";
+import CowHeroCard from "../components/CowHeroCard";
+import CowSummaryCard from "../components/CowSummaryCard";
+import HealthStatusToggle from "../components/HealthStatusToggle";
+import Modal from "../components/Modal";
+import Notes from "../components/Notes";
+import {
+  breedingStatusOptions,
+  heatStatusOptions,
+  livestockGroupOptions,
+  sexOptions,
+} from "../constants/cowFormOptions";
 import { getActivities } from "../services/activityService";
 import {
   type CreateCowInput,
@@ -10,8 +22,6 @@ import {
 } from "../services/cowService";
 import type { Cow } from "../types/cow";
 import "../styles/CowDetailPage.css";
-import Notes from "../components/Notes";
-import Modal from "../components/Modal";
 
 type ActivityLogEntry = {
   id: number;
@@ -19,7 +29,28 @@ type ActivityLogEntry = {
   createdAt: string;
 };
 
-const editableFields = [
+type EditableFieldName =
+  | "ownerName"
+  | "breed"
+  | "sex"
+  | "heatStatus"
+  | "dateOfBirth"
+  | "purchaseDate"
+  | "purchasePrice"
+  | "saleDate"
+  | "salePrice";
+
+type EditingFieldName =
+  | EditableFieldName
+  | "tagNumber"
+  | "livestockGroup"
+  | "breedingStatus";
+
+type ApiError = Error & {
+  status?: number;
+};
+
+const editableFields: EditableFieldName[] = [
   "ownerName",
   "breed",
   "sex",
@@ -50,11 +81,6 @@ function formatCurrency(value: number | null | undefined) {
   }).format(value);
 }
 
-function getOwnerInitial(name: string | null | undefined) {
-  if (!name) return "?";
-  return name.trim().charAt(0).toUpperCase() || "?";
-}
-
 function toCreateCowInput(cow: Cow): CreateCowInput {
   return {
     tagNumber: cow.tagNumber,
@@ -82,7 +108,9 @@ function CowDetailPage() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<Cow | null>(null);
-  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editingField, setEditingField] = useState<EditingFieldName | null>(
+    null,
+  );
   const [activities, setActivities] = useState<ActivityLogEntry[]>([]);
   const [loadingActivities, setLoadingActivities] = useState(false);
   const [activitiesError, setActivitiesError] = useState("");
@@ -147,8 +175,6 @@ function CowDetailPage() {
   async function handleDelete() {
     if (!cow) return;
 
-    console.log("Deleting cow:", cow.id);
-
     try {
       await deleteCow(cow.id);
       navigate("/cows");
@@ -158,6 +184,7 @@ function CowDetailPage() {
       setError(message);
     }
   }
+
   async function handleRestore() {
     if (!cow) return;
 
@@ -173,9 +200,9 @@ function CowDetailPage() {
   }
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) {
-    const { name, value } = e.target;
+    const { name, value } = event.target;
 
     setFormData((prev) => {
       if (!prev) return prev;
@@ -193,10 +220,11 @@ function CowDetailPage() {
       };
     });
   }
+
   async function saveCowUpdates() {
     if (!formData || !cow) return;
 
-    const prev = cow; // store previous state
+    const prev = cow;
 
     try {
       const updated = await updateCow(cow.id, toCreateCowInput(formData));
@@ -205,8 +233,7 @@ function CowDetailPage() {
       await refreshActivities();
     } catch (err) {
       let message = "Failed to update cow";
-      const apiErr = err as any;
-      // If backend returned 400 (duplicate tag)
+      const apiErr = err as ApiError;
       if (apiErr?.status === 400) {
         message = "Tag number already exists";
       } else if (err instanceof Error) {
@@ -214,83 +241,213 @@ function CowDetailPage() {
       }
 
       setError(message);
-
-      // 🔥 rollback
       setFormData(prev);
     }
   }
 
+  async function commitField(nextField: EditingFieldName | null = null) {
+    setEditingField(nextField);
+    await saveCowUpdates();
+  }
+
+  async function handleEditableKeyDown(
+    event: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>,
+  ) {
+    if (!editingField) return;
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      await commitField();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      event.preventDefault();
+      const currentIndex = editableFields.indexOf(
+        editingField as EditableFieldName,
+      );
+      const nextField = editableFields[currentIndex + 1] ?? null;
+      await commitField(nextField);
+    }
+  }
+
+  async function updateHealthStatus(value: "Healthy" | "NeedsTreatment") {
+    if (!formData || !cow) return;
+
+    const next = { ...formData, healthStatus: value } as Cow;
+    setFormData(next);
+
+    const updated = await updateCow(cow.id, toCreateCowInput(next));
+    setCow(updated);
+    setFormData(updated);
+    await refreshActivities();
+  }
+
+  function renderEditableField(config: {
+    name: EditableFieldName;
+    label: string;
+    type: "text" | "number" | "date" | "select";
+    options?: readonly { value: string; label: string }[];
+    displayValue?: string;
+  }) {
+    const isEditing = editingField === config.name;
+    const value = formData?.[config.name];
+    const inputValue =
+      config.type === "date"
+        ? (value?.toString().split("T")[0] ?? "")
+        : (value ?? "");
+
+    let content: React.ReactNode;
+
+    if (isEditing) {
+      content =
+        config.type === "select" ? (
+          <select
+            name={config.name}
+            value={String(inputValue)}
+            onChange={handleChange}
+            onBlur={async () => commitField()}
+            onKeyDown={handleEditableKeyDown}
+            autoFocus
+            className="inlineFieldInput"
+          >
+            {config.options?.map((option) => (
+              <option key={option.value || "empty"} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={config.type}
+            name={config.name}
+            value={inputValue as string | number}
+            onChange={handleChange}
+            onBlur={async () => commitField()}
+            onKeyDown={handleEditableKeyDown}
+            autoFocus
+            className="inlineFieldInput"
+          />
+        );
+    } else {
+      content = <span>{config.displayValue ?? formatValue(value)}</span>;
+    }
+
+    return {
+      key: config.name,
+      label: config.label,
+      content,
+      onDoubleClick: () => {
+        if (editingField !== config.name) {
+          setEditingField(config.name);
+        }
+      },
+    };
+  }
+
   if (loading) return <p>Loading cow...</p>;
-  if (!cow) return <p>Cow not found</p>;
+  if (!cow || !formData) return <p>Cow not found</p>;
+
+  const detailFields = [
+    renderEditableField({
+      name: "ownerName",
+      label: "Owner",
+      type: "text",
+    }),
+    renderEditableField({
+      name: "breed",
+      label: "Breed",
+      type: "text",
+    }),
+    renderEditableField({
+      name: "sex",
+      label: "Sex",
+      type: "select",
+      options: sexOptions,
+    }),
+    renderEditableField({
+      name: "heatStatus",
+      label: "Heat Status",
+      type: "select",
+      options: [
+        { value: "", label: "Select" },
+        ...heatStatusOptions.filter((option) => option.value !== ""),
+      ],
+      displayValue: formatLabel(formData.heatStatus),
+    }),
+    renderEditableField({
+      name: "dateOfBirth",
+      label: "Date of Birth",
+      type: "date",
+    }),
+    renderEditableField({
+      name: "purchaseDate",
+      label: "Purchase Date",
+      type: "date",
+    }),
+    renderEditableField({
+      name: "saleDate",
+      label: "Sale Date",
+      type: "date",
+    }),
+    renderEditableField({
+      name: "purchasePrice",
+      label: "Purchase Price",
+      type: "number",
+      displayValue: formatCurrency(formData.purchasePrice),
+    }),
+    renderEditableField({
+      name: "salePrice",
+      label: "Sale Price",
+      type: "number",
+      displayValue: formatCurrency(formData.salePrice),
+    }),
+    {
+      key: "recordId",
+      label: "Record ID",
+      content: <span>#{cow.id}</span>,
+    },
+  ];
+
+  const groupValue = formData.livestockGroup || "";
+  const breedingValue = formData.breedingStatus || "";
 
   return (
     <div className="cowDetailPage">
-      {error && (
-        <div
-          style={{
-            color: "#ff6b6b",
-            background: "rgba(255, 0, 0, 0.08)",
-            padding: "10px 14px",
-            borderRadius: "8px",
-            marginBottom: "12px",
-            fontSize: "0.9rem",
-            border: "1px solid rgba(255, 0, 0, 0.2)",
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className="pageErrorBanner">{error}</div>}
+
       <div className="cowDetailShell">
         <div className="cowDashboardGrid">
           <div className="leftColumn">
-            <section className="dashboardCard heroCard">
-              <div className="eyebrow">Cow Overview</div>
-
-              <div className="heroHeader">
-                <div className="titleBlock">
-                  <h1
-                    className="cowTitle"
-                    onDoubleClick={() => {
-                      if (editingField !== "tagNumber")
-                        setEditingField("tagNumber");
-                    }}
-                  >
-                    {editingField === "tagNumber" ? (
-                      <input
-                        name="tagNumber"
-                        value={formData?.tagNumber || ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                      />
-                    ) : (
-                      <>{formatValue(formData?.tagNumber)}</>
-                    )}
-                  </h1>
-                  <p className="cowSubtitle">
-                    Detailed record for herd tracking, ownership, and lifecycle
-                    data.
-                  </p>
-                </div>
-
-                {cow.isRemoved ? (
+            <CowHeroCard
+              eyebrow="Cow Overview"
+              title={
+                <h1
+                  className="cowTitle"
+                  onDoubleClick={() => {
+                    if (editingField !== "tagNumber") {
+                      setEditingField("tagNumber");
+                    }
+                  }}
+                >
+                  {editingField === "tagNumber" ? (
+                    <input
+                      name="tagNumber"
+                      value={formData.tagNumber || ""}
+                      onChange={handleChange}
+                      onBlur={async () => commitField()}
+                      onKeyDown={handleEditableKeyDown}
+                      autoFocus
+                      className="heroTitleInput"
+                    />
+                  ) : (
+                    formatValue(formData.tagNumber)
+                  )}
+                </h1>
+              }
+              subtitle="Detailed record for herd tracking, ownership, and lifecycle data."
+              action={
+                cow.isRemoved ? (
                   <button
                     className="restoreButton"
                     onClick={() => setShowRestoreModal(true)}
@@ -304,143 +461,42 @@ function CowDetailPage() {
                   >
                     Remove Cow
                   </button>
-                )}
-              </div>
-
+                )
+              }
+            >
               <div className="metricsGrid">
-                <div className="metricCard">
-                  <div className="metricLabel">Health Status</div>
-                  <div
-                    style={{
-                      marginTop: "8px",
-                      display: "flex",
-                      gap: "8px",
-                      width: "100%",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        if (!formData || !cow) return;
-                        const next = {
-                          ...formData,
-                          healthStatus: "Healthy",
-                        } as any;
-                        setFormData(next);
-                        const updated = await updateCow(cow.id, next);
-                        setCow(updated);
-                        setFormData(updated);
-                        await refreshActivities();
-                      }}
-                      style={{
-                        height: "60px",
-                        flex: 1,
-                        padding: "8px 1px",
-                        borderRadius: "12px",
-                        border: "none",
-                        minWidth: "100px",
-                        background:
-                          (formData?.healthStatus || cow.healthStatus) ===
-                          "Healthy"
-                            ? "linear-gradient(180deg, #4caf50 0%, #3d8b40 100%)"
-                            : "rgba(255,255,255,0.12)",
-                        color: "#ffffff",
-                        fontWeight: 700,
-                        fontSize: "0.95rem",
-                        cursor: "pointer",
-                        boxShadow:
-                          (formData?.healthStatus || cow.healthStatus) ===
-                          "Healthy"
-                            ? "0 10px 25px rgba(76, 175, 80, 0.22)"
-                            : "none",
-                        transition:
-                          "transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease",
-                      }}
-                    >
-                      Healthy
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        if (!formData || !cow) return;
-                        const next = {
-                          ...formData,
-                          healthStatus: "NeedsTreatment",
-                        } as any;
-                        setFormData(next);
-                        const updated = await updateCow(cow.id, next);
-                        setCow(updated);
-                        setFormData(updated);
-                        await refreshActivities();
-                      }}
-                      style={{
-                        height: "60px",
-                        flex: 1,
-                        padding: "8px 1px",
-                        borderRadius: "12px",
-                        border: "none",
-                        minWidth: "100px",
-                        background:
-                          (formData?.healthStatus || cow.healthStatus) ===
-                          "NeedsTreatment"
-                            ? "linear-gradient(180deg, #c74652 0%, #9f2e39 100%)"
-                            : "rgba(255,255,255,0.12)",
-                        color: "#ffffff",
-                        fontWeight: 700,
-                        fontSize: "0.95rem",
-                        cursor: "pointer",
-                        boxShadow:
-                          (formData?.healthStatus || cow.healthStatus) ===
-                          "NeedsTreatment"
-                            ? "0 10px 25px rgba(217, 76, 87, 0.22)"
-                            : "none",
-                        transition:
-                          "transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease",
-                      }}
-                    >
-                      Needs Treatment
-                    </button>
-                  </div>
-                  <div />
-                </div>
+                <HealthStatusToggle
+                  value={formData.healthStatus || cow.healthStatus}
+                  onChange={updateHealthStatus}
+                />
 
                 <div className="metricCard">
                   <div className="metricLabel">Livestock Group</div>
                   <div
                     className="metricValue"
                     onDoubleClick={() => {
-                      if (editingField !== "livestockGroup")
+                      if (editingField !== "livestockGroup") {
                         setEditingField("livestockGroup");
+                      }
                     }}
                   >
                     {editingField === "livestockGroup" ? (
                       <select
                         name="livestockGroup"
-                        value={formData?.livestockGroup || ""}
+                        value={groupValue}
                         onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
+                        onBlur={async () => commitField()}
                         autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
+                        className="metricFieldInput"
                       >
-                        <option value="Breeding">Breeding</option>
-                        <option value="Market">Market</option>
-                        <option value="Feeder">Feeder</option>
+                        {livestockGroupOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
                       </select>
                     ) : (
-                      <span>{formatValue(formData?.livestockGroup)}</span>
+                      <span>{formatValue(formData.livestockGroup)}</span>
                     )}
                   </div>
                   <div className="metricAccent" />
@@ -451,554 +507,56 @@ function CowDetailPage() {
                   <div
                     className="metricValue"
                     onDoubleClick={() => {
-                      if (editingField !== "breedingStatus")
+                      if (editingField !== "breedingStatus") {
                         setEditingField("breedingStatus");
+                      }
                     }}
                   >
                     {editingField === "breedingStatus" ? (
                       <select
                         name="breedingStatus"
-                        value={formData?.breedingStatus || ""}
+                        value={breedingValue}
                         onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
+                        onBlur={async () => commitField()}
                         autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
+                        className="metricFieldInput"
                       >
-                        <option value="">Select</option>
-                        <option value="Open">Open</option>
-                        <option value="Bred">Bred</option>
-                        <option value="Pregnant">Pregnant</option>
-                        <option value="N/A">N/A</option>
+                        {breedingStatusOptions.map((option) => (
+                          <option key={option.value || "empty"} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
                       </select>
                     ) : (
-                      <span>{formatValue(formData?.breedingStatus)}</span>
+                      <span>{formatValue(formData.breedingStatus)}</span>
                     )}
                   </div>
                   <div className="metricAccent" />
                 </div>
               </div>
-            </section>
+            </CowHeroCard>
 
-            <section className="dashboardCard">
-              <div className="dataCardHeader">
-                <h2 className="cardTitle">Cow Details</h2>
-                <span className="cardSubtle">Profile information</span>
-              </div>
-
-              <div className="infoGrid">
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "ownerName") {
-                      setEditingField("ownerName");
-                    }
-                  }}
-                >
-                  <div className="infoLabel">Owner</div>
-                  <div className="infoValue">
-                    {editingField === "ownerName" ? (
-                      <input
-                        name="ownerName"
-                        value={formData?.ownerName || ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                      />
-                    ) : (
-                      <span>{formatValue(formData?.ownerName)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "breed") setEditingField("breed");
-                  }}
-                >
-                  <div className="infoLabel">Breed</div>
-                  <div className="infoValue">
-                    {editingField === "breed" ? (
-                      <input
-                        name="breed"
-                        value={formData?.breed || ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                      />
-                    ) : (
-                      <span>{formatValue(formData?.breed)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "sex") setEditingField("sex");
-                  }}
-                >
-                  <div className="infoLabel">Sex</div>
-                  <div className="infoValue">
-                    {editingField === "sex" ? (
-                      <select
-                        name="sex"
-                        value={formData?.sex || ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                        autoFocus
-                      >
-                        <option value="">Select</option>
-                        <option value="Cow">Cow</option>
-                        <option value="Bull">Bull</option>
-                        <option value="Heifer">Heifer</option>
-                        <option value="Steer">Steer</option>
-                      </select>
-                    ) : (
-                      <span>{formatValue(formData?.sex)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "heatStatus")
-                      setEditingField("heatStatus");
-                  }}
-                >
-                  <div className="infoLabel">Heat Status</div>
-                  <div className="infoValue">
-                    {editingField === "heatStatus" ? (
-                      <select
-                        name="heatStatus"
-                        value={formData?.heatStatus || ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                      >
-                        <option value="">Select</option>
-                        <option value="WatchHeat">Watch Heat</option>
-                        <option value="InHeat">In Heat</option>
-                        <option value="NotInHeat">Not in Heat</option>
-                      </select>
-                    ) : (
-                      <span>{formatLabel(formData?.heatStatus)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "dateOfBirth")
-                      setEditingField("dateOfBirth");
-                  }}
-                >
-                  <div className="infoLabel">Date of Birth</div>
-                  <div className="infoValue">
-                    {editingField === "dateOfBirth" ? (
-                      <input
-                        type="date"
-                        name="dateOfBirth"
-                        value={
-                          (formData?.dateOfBirth || "")
-                            .toString()
-                            .split("T")[0] || ""
-                        }
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                      />
-                    ) : (
-                      <span>{formatValue(formData?.dateOfBirth)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "purchaseDate")
-                      setEditingField("purchaseDate");
-                  }}
-                >
-                  <div className="infoLabel">Purchase Date</div>
-                  <div className="infoValue">
-                    {editingField === "purchaseDate" ? (
-                      <input
-                        type="date"
-                        name="purchaseDate"
-                        value={
-                          (formData?.purchaseDate || "")
-                            .toString()
-                            .split("T")[0] || ""
-                        }
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                      />
-                    ) : (
-                      <span>{formatValue(formData?.purchaseDate)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "saleDate")
-                      setEditingField("saleDate");
-                  }}
-                >
-                  <div className="infoLabel">Sale Date</div>
-                  <div className="infoValue">
-                    {editingField === "saleDate" ? (
-                      <input
-                        type="date"
-                        name="saleDate"
-                        value={
-                          (formData?.saleDate || "").toString().split("T")[0] ||
-                          ""
-                        }
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                      />
-                    ) : (
-                      <span>{formatValue(formData?.saleDate)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "purchasePrice")
-                      setEditingField("purchasePrice");
-                  }}
-                >
-                  <div className="infoLabel">Purchase Price</div>
-                  <div className="infoValue">
-                    {editingField === "purchasePrice" ? (
-                      <input
-                        type="number"
-                        name="purchasePrice"
-                        value={formData?.purchasePrice ?? ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                      />
-                    ) : (
-                      <span>{formatCurrency(formData?.purchasePrice)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className="infoTile"
-                  onDoubleClick={() => {
-                    if (editingField !== "salePrice")
-                      setEditingField("salePrice");
-                  }}
-                >
-                  <div className="infoLabel">Sale Price</div>
-                  <div className="infoValue">
-                    {editingField === "salePrice" ? (
-                      <input
-                        type="number"
-                        name="salePrice"
-                        value={formData?.salePrice ?? ""}
-                        onChange={handleChange}
-                        onBlur={async () => {
-                          setEditingField(null);
-                          await saveCowUpdates();
-                        }}
-                        onKeyDown={async (e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            setEditingField(null);
-                            await saveCowUpdates();
-                          }
-
-                          if (e.key === "Tab") {
-                            e.preventDefault();
-                            const currentIndex = editableFields.indexOf(
-                              editingField!,
-                            );
-                            const nextField = editableFields[currentIndex + 1];
-                            setEditingField(nextField || null);
-                            await saveCowUpdates();
-                          }
-                        }}
-                        autoFocus
-                        style={{
-                          width: "100%",
-                          background: "transparent",
-                          border: "none",
-                          outline: "none",
-                          color: "inherit",
-                          font: "inherit",
-                        }}
-                      />
-                    ) : (
-                      <span>{formatCurrency(formData?.salePrice)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="infoTile">
-                  <div className="infoLabel">Record ID</div>
-                  <div className="infoValue">#{cow.id}</div>
-                </div>
-              </div>
-            </section>
+            <CowDetailsSection
+              title="Cow Details"
+              subtitle="Profile information"
+              fields={detailFields}
+            />
           </div>
 
           <div className="rightColumn">
-            <section className="dashboardCard rightSummaryCard">
-              <div className="dataCardHeader">
-                <h2 className="cardTitle">Profile Summary</h2>
-                <span className="cardSubtle">At a glance</span>
-              </div>
-
-              <div className="ownerRow">
-                <div className="ownerAvatar">
-                  {getOwnerInitial(cow.ownerName)}
-                </div>
-                <div className="ownerMeta">
-                  <div className="ownerName">{formatValue(cow.ownerName)}</div>
-                  <div className="ownerRole">Primary owner</div>
-                </div>
-              </div>
-
-              <div className="kpiStack">
-                <div className="kpiRow">
-                  <span className="kpiLabel">Purchase Price</span>
-                  <span className="kpiValue">
-                    {formatCurrency(cow.purchasePrice)}
-                  </span>
-                </div>
-
-                <div className="kpiRow">
-                  <span className="kpiLabel">Sale Price</span>
-                  <span className="kpiValue">
-                    {formatCurrency(cow.salePrice)}
-                  </span>
-                </div>
-              </div>
-            </section>
+            <CowSummaryCard
+              ownerName={cow.ownerName}
+              subtitle="At a glance"
+              purchasePrice={formatCurrency(cow.purchasePrice)}
+              salePrice={formatCurrency(cow.salePrice)}
+            />
             <Notes cowId={cow.id} />
           </div>
         </div>
-        <div className="fullWidthRow" style={{ marginTop: "20px" }}>
+
+        <div className="fullWidthRow">
           <section className="dashboardCard activityCard">
-            <div className="dataCardHeader" style={{ marginTop: "10px" }}>
+            <div className="dataCardHeader activityCardHeader">
               <h2 className="cardTitle">Activity Log</h2>
               <span className="cardSubtle">Recent timeline</span>
             </div>
@@ -1027,7 +585,7 @@ function CowDetailPage() {
           </section>
         </div>
       </div>
-      {/* Delete confirmation modal */}
+
       <Modal
         isOpen={showDeleteModal}
         title="Remove Cow"
@@ -1035,12 +593,11 @@ function CowDetailPage() {
         confirmText="Remove Cow"
         onCancel={() => setShowDeleteModal(false)}
         onConfirm={() => {
-          console.log("CONFIRM CLICKED");
           handleDelete();
           setShowDeleteModal(false);
         }}
       />
-      {/* Restore confirmation modal */}
+
       <Modal
         isOpen={showRestoreModal}
         title="Restore Cow"

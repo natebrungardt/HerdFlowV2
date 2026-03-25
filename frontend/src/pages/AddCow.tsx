@@ -1,5 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CowDetailsSection from "../components/CowDetailsSection";
+import CowHeroCard from "../components/CowHeroCard";
+import CowSummaryCard from "../components/CowSummaryCard";
+import HealthStatusToggle from "../components/HealthStatusToggle";
+import {
+  breedingStatusOptions,
+  heatStatusOptions,
+  livestockGroupOptions,
+  sexOptions,
+} from "../constants/cowFormOptions";
 import { createCow } from "../services/cowService";
 import "../styles/CowDetailPage.css";
 
@@ -36,11 +46,6 @@ const initialFormState: FormState = {
   salePrice: "",
   notes: "",
 };
-
-function getOwnerInitial(name: string) {
-  if (!name.trim()) return "?";
-  return name.trim().charAt(0).toUpperCase();
-}
 
 function formatCurrencyPreview(value: string) {
   if (!value) return "—";
@@ -114,175 +119,198 @@ function AddCowPage() {
     setSaving(false);
   }
 
+  const detailFields = [
+    {
+      key: "ownerName",
+      label: "Owner",
+      content: (
+        <input
+          id="ownerName"
+          name="ownerName"
+          className="cardInput"
+          value={formData.ownerName}
+          onChange={handleChange}
+          placeholder="Enter owner name"
+          required
+        />
+      ),
+    },
+    {
+      key: "breed",
+      label: "Breed",
+      content: (
+        <input
+          id="breed"
+          name="breed"
+          className="cardInput"
+          value={formData.breed}
+          onChange={handleChange}
+          placeholder="Enter breed"
+        />
+      ),
+    },
+    {
+      key: "sex",
+      label: "Sex",
+      content: (
+        <select
+          id="sex"
+          name="sex"
+          className="cardInput"
+          value={formData.sex}
+          onChange={handleChange}
+        >
+          {sexOptions.map((option) => (
+            <option key={option.value || "empty"} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ),
+    },
+    {
+      key: "heatStatus",
+      label: "Heat Status",
+      content: (
+        <select
+          id="heatStatus"
+          name="heatStatus"
+          className="cardInput"
+          value={formData.heatStatus}
+          onChange={handleChange}
+        >
+          {heatStatusOptions.map((option) => (
+            <option key={option.value || "empty"} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ),
+    },
+    {
+      key: "dateOfBirth",
+      label: "Date of Birth",
+      content: (
+        <input
+          id="dateOfBirth"
+          name="dateOfBirth"
+          type="date"
+          className="cardInput"
+          value={formData.dateOfBirth}
+          onChange={handleChange}
+        />
+      ),
+    },
+    {
+      key: "purchaseDate",
+      label: "Purchase Date",
+      content: (
+        <input
+          id="purchaseDate"
+          name="purchaseDate"
+          type="date"
+          className="cardInput"
+          value={formData.purchaseDate}
+          onChange={handleChange}
+        />
+      ),
+    },
+    {
+      key: "saleDate",
+      label: "Sale Date",
+      content: (
+        <input
+          id="saleDate"
+          name="saleDate"
+          type="date"
+          className="cardInput"
+          value={formData.saleDate}
+          onChange={handleChange}
+        />
+      ),
+    },
+    {
+      key: "purchasePrice",
+      label: "Purchase Price",
+      content: (
+        <input
+          id="purchasePrice"
+          name="purchasePrice"
+          type="number"
+          className="cardInput"
+          value={formData.purchasePrice}
+          onChange={handleChange}
+          placeholder="Enter purchase price"
+        />
+      ),
+    },
+    {
+      key: "salePrice",
+      label: "Sale Price",
+      content: (
+        <input
+          id="salePrice"
+          name="salePrice"
+          type="number"
+          className="cardInput"
+          value={formData.salePrice}
+          onChange={handleChange}
+          placeholder="Enter sale price"
+        />
+      ),
+    },
+  ];
+
   return (
     <div className="cowDetailPage">
-      {error && (
-        <div
-          style={{
-            color: "#ff6b6b",
-            background: "rgba(255, 0, 0, 0.08)",
-            padding: "10px 14px",
-            borderRadius: "8px",
-            marginBottom: "12px",
-            fontSize: "0.9rem",
-            border: "1px solid rgba(255, 0, 0, 0.2)",
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className="pageErrorBanner">{error}</div>}
+
       <div className="cowDetailShell">
         <form className="cowDashboardGrid" onSubmit={handleSubmit}>
           <div className="leftColumn">
-            <section className="dashboardCard heroCard">
-              <div className="eyebrow">New Herd Record</div>
-
-              <div className="heroHeader">
-                <div className="titleBlock">
-                  <input
-                    name="tagNumber"
-                    value={formData.tagNumber}
-                    onChange={handleChange}
-                    required
-                    placeholder="Tag #"
-                    className="cowTitle"
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      color: "inherit",
-                      font: "inherit",
-                      fontSize: "2rem",
-                      fontWeight: 700,
-                      width: "100%",
-                    }}
-                  />
-                  <p className="cowSubtitle">
-                    Create a new herd record with ownership, lifecycle, and
-                    status details.
-                  </p>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    flexWrap: "wrap",
-                    justifyContent: "flex-end",
-                  }}
-                >
+            <CowHeroCard
+              eyebrow="New Herd Record"
+              title={
+                <input
+                  name="tagNumber"
+                  value={formData.tagNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="Tag #"
+                  className="cowTitle heroTitleInput"
+                />
+              }
+              subtitle="Create a new herd record with ownership, lifecycle, and status details."
+              action={
+                <div className="heroActions">
                   <button
                     type="button"
-                    className="addCowButton"
+                    className="addCowButton addCowButtonGhost"
                     onClick={() => navigate("/cows")}
-                    style={{
-                      background: "transparent",
-                      border: "1px solid rgba(199, 70, 82, 0.18)",
-                      color: "#d36b74",
-                    }}
                   >
                     Cancel
                   </button>
 
                   <button
                     type="submit"
-                    className="addCowButton"
+                    className="addCowButton addCowButtonSuccess"
                     disabled={saving}
-                    style={{
-                      background:
-                        "linear-gradient(180deg, #5fbf7a 0%, #3d8b40 100%)",
-                      boxShadow: "0 12px 28px rgba(76, 175, 80, 0.35)",
-                    }}
                   >
                     {saving ? "Saving..." : "Save Cow"}
                   </button>
                 </div>
-              </div>
-
+              }
+            >
               <div className="metricsGrid">
-                <div className="metricCard">
-                  <label className="metricLabel" htmlFor="healthStatus">
-                    Health Status
-                  </label>
-                  <div
-                    style={{
-                      marginTop: "8px",
-                      display: "flex",
-                      gap: "8px",
-                      width: "100%",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          healthStatus: "Healthy",
-                        }))
-                      }
-                      style={{
-                        height: "60px",
-                        flex: 1,
-                        padding: "8px 1px",
-                        borderRadius: "12px",
-                        border: "none",
-                        minWidth: "100px",
-                        background:
-                          formData.healthStatus === "Healthy"
-                            ? "linear-gradient(180deg, #4caf50 0%, #3d8b40 100%)"
-                            : "rgba(255,255,255,0.12)",
-                        color: "#ffffff",
-                        fontWeight: 700,
-                        fontSize: "0.95rem",
-                        cursor: "pointer",
-                        boxShadow:
-                          formData.healthStatus === "Healthy"
-                            ? "0 10px 25px rgba(76, 175, 80, 0.22)"
-                            : "none",
-                        transition:
-                          "transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease",
-                      }}
-                    >
-                      Healthy
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          healthStatus: "NeedsTreatment",
-                        }))
-                      }
-                      style={{
-                        height: "60px",
-                        flex: 1,
-                        padding: "8px 1px",
-                        borderRadius: "12px",
-                        border: "none",
-                        minWidth: "100px",
-                        background:
-                          formData.healthStatus === "NeedsTreatment"
-                            ? "linear-gradient(180deg, #c74652 0%, #9f2e39 100%)"
-                            : "rgba(255,255,255,0.12)",
-                        color: "#ffffff",
-                        fontWeight: 700,
-                        fontSize: "0.95rem",
-                        cursor: "pointer",
-                        boxShadow:
-                          formData.healthStatus === "NeedsTreatment"
-                            ? "0 10px 25px rgba(217, 76, 87, 0.22)"
-                            : "none",
-                        transition:
-                          "transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease",
-                      }}
-                    >
-                      Needs Treatment
-                    </button>
-                  </div>
-                </div>
+                <HealthStatusToggle
+                  value={formData.healthStatus}
+                  onChange={(value) =>
+                    setFormData((current) => ({
+                      ...current,
+                      healthStatus: value,
+                    }))
+                  }
+                />
 
                 <div className="metricCard">
                   <label className="metricLabel" htmlFor="livestockGroup">
@@ -291,27 +319,21 @@ function AddCowPage() {
                   <select
                     id="livestockGroup"
                     name="livestockGroup"
-                    className="infoValue"
+                    className="metricFieldInput"
                     value={formData.livestockGroup}
                     onChange={handleChange}
                     required
-                    style={{
-                      marginTop: "15px",
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
                   >
                     <option value="" disabled>
                       Select group
                     </option>
-                    <option value="Breeding">Breeding</option>
-                    <option value="Market">Market</option>
-                    <option value="Feeder">Feeder</option>
+                    {livestockGroupOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
-                  <div className="metricAccent" style={{ marginTop: "4px" }} />
+                  <div className="metricAccent" />
                 </div>
 
                 <div className="metricCard">
@@ -321,238 +343,26 @@ function AddCowPage() {
                   <select
                     id="breedingStatus"
                     name="breedingStatus"
-                    className="infoValue"
+                    className="metricFieldInput"
                     value={formData.breedingStatus}
                     onChange={handleChange}
-                    style={{
-                      marginTop: "15px",
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
                   >
-                    <option value="">Select status</option>
-                    <option value="Open">Open</option>
-                    <option value="Bred">Bred</option>
-                    <option value="Pregnant">Pregnant</option>
-                    <option value="N/A">N/A</option>
+                    {breedingStatusOptions.map((option) => (
+                      <option key={option.value || "empty"} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
-                  <div className="metricAccent" style={{ marginTop: "4px" }} />
+                  <div className="metricAccent" />
                 </div>
               </div>
-            </section>
+            </CowHeroCard>
 
-            <section className="dashboardCard">
-              <div className="dataCardHeader">
-                <h2 className="cardTitle">Cow Details</h2>
-                <span className="cardSubtle">Enter profile information</span>
-              </div>
-
-              <div className="infoGrid">
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="ownerName">
-                    Owner
-                  </label>
-                  <input
-                    id="ownerName"
-                    name="ownerName"
-                    className="infoValue"
-                    value={formData.ownerName}
-                    onChange={handleChange}
-                    placeholder="Enter owner name"
-                    required
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="breed">
-                    Breed
-                  </label>
-                  <input
-                    id="breed"
-                    name="breed"
-                    className="infoValue"
-                    value={formData.breed}
-                    onChange={handleChange}
-                    placeholder="Enter breed"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="sex">
-                    Sex
-                  </label>
-                  <select
-                    id="sex"
-                    name="sex"
-                    className="infoValue"
-                    value={formData.sex}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  >
-                    <option value="">Select sex</option>
-                    <option value="Cow">Cow</option>
-                    <option value="Bull">Bull</option>
-                    <option value="Heifer">Heifer</option>
-                    <option value="Steer">Steer</option>
-                  </select>
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="heatStatus">
-                    Heat Status
-                  </label>
-                  <select
-                    id="heatStatus"
-                    name="heatStatus"
-                    className="infoValue"
-                    value={formData.heatStatus}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  >
-                    <option value="">Select heat status</option>
-                    <option value="WatchHeat">Watch Heat</option>
-                    <option value="InHeat">In Heat</option>
-                    <option value="NotInHeat">Not In Heat</option>
-                  </select>
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="dateOfBirth">
-                    Date of Birth
-                  </label>
-                  <input
-                    id="dateOfBirth"
-                    name="dateOfBirth"
-                    type="date"
-                    className="infoValue"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="purchaseDate">
-                    Purchase Date
-                  </label>
-                  <input
-                    id="purchaseDate"
-                    name="purchaseDate"
-                    type="date"
-                    className="infoValue"
-                    value={formData.purchaseDate}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="saleDate">
-                    Sale Date
-                  </label>
-                  <input
-                    id="saleDate"
-                    name="saleDate"
-                    type="date"
-                    className="infoValue"
-                    value={formData.saleDate}
-                    onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="purchasePrice">
-                    Purchase Price
-                  </label>
-                  <input
-                    id="purchasePrice"
-                    name="purchasePrice"
-                    type="number"
-                    className="infoValue"
-                    value={formData.purchasePrice}
-                    onChange={handleChange}
-                    placeholder="Enter purchase price"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-
-                <div className="infoTile">
-                  <label className="infoLabel" htmlFor="salePrice">
-                    Sale Price
-                  </label>
-                  <input
-                    id="salePrice"
-                    name="salePrice"
-                    type="number"
-                    className="infoValue"
-                    value={formData.salePrice}
-                    onChange={handleChange}
-                    placeholder="Enter sale price"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      padding: 0,
-                    }}
-                  />
-                </div>
-              </div>
-            </section>
+            <CowDetailsSection
+              title="Cow Details"
+              subtitle="Enter profile information"
+              fields={detailFields}
+            />
 
             <section className="dashboardCard activityCard">
               <div className="dataCardHeader">
@@ -598,40 +408,12 @@ function AddCowPage() {
           </div>
 
           <div className="rightColumn">
-            <section className="dashboardCard rightSummaryCard">
-              <div className="dataCardHeader">
-                <h2 className="cardTitle">Profile Summary</h2>
-                <span className="cardSubtle">Live preview</span>
-              </div>
-
-              <div className="ownerRow">
-                <div className="ownerAvatar">
-                  {getOwnerInitial(formData.ownerName)}
-                </div>
-                <div className="ownerMeta">
-                  <div className="ownerName">
-                    {formData.ownerName || "No owner yet"}
-                  </div>
-                  <div className="ownerRole">Primary owner</div>
-                </div>
-              </div>
-
-              <div className="kpiStack">
-                <div className="kpiRow">
-                  <span className="kpiLabel">Purchase Price</span>
-                  <span className="kpiValue">
-                    {formatCurrencyPreview(formData.purchasePrice)}
-                  </span>
-                </div>
-
-                <div className="kpiRow">
-                  <span className="kpiLabel">Sale Price</span>
-                  <span className="kpiValue">
-                    {formatCurrencyPreview(formData.salePrice)}
-                  </span>
-                </div>
-              </div>
-            </section>
+            <CowSummaryCard
+              ownerName={formData.ownerName}
+              subtitle="Live preview"
+              purchasePrice={formatCurrencyPreview(formData.purchasePrice)}
+              salePrice={formatCurrencyPreview(formData.salePrice)}
+            />
 
             <section className="dashboardCard">
               <div className="dataCardHeader">
@@ -639,18 +421,7 @@ function AddCowPage() {
                 <span className="cardSubtle">Internal record</span>
               </div>
 
-              <div
-                className="notesBody"
-                style={{
-                  width: "100%",
-                  minHeight: "180px",
-                  color: "rgba(255,255,255,0.55)",
-                  fontStyle: "italic",
-                  padding: "16px",
-                  display: "flex",
-                  alignItems: "flex-start",
-                }}
-              >
+              <div className="notesPlaceholder">
                 Notes are available after creating this cow.
               </div>
             </section>

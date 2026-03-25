@@ -38,6 +38,13 @@
   margin-bottom: 22px;
 }
 
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .titleBlock {
   min-width: 0;
 }
@@ -54,6 +61,26 @@
   margin: 8px 0 0;
   color: #95a0b8;
   font-size: 0.96rem;
+}
+
+.heroTitleInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.pageErrorBanner {
+  color: #ff6b6b;
+  background: rgba(255, 0, 0, 0.08);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 0, 0, 0.2);
 }
 
 .deleteButton {
@@ -96,6 +123,43 @@
   padding: 16px;
 }
 
+.metricToggleRow {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.metricToggleButton {
+  height: 60px;
+  flex: 1;
+  padding: 8px 1px;
+  border-radius: 12px;
+  border: none;
+  min-width: 100px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+.metricToggleButton.isActive.isHealthy {
+  background: linear-gradient(180deg, #4caf50 0%, #3d8b40 100%);
+  box-shadow: 0 10px 25px rgba(76, 175, 80, 0.22);
+}
+
+.metricToggleButton.isActive.isNeedsTreatment {
+  background: linear-gradient(180deg, #c74652 0%, #9f2e39 100%);
+  box-shadow: 0 10px 25px rgba(217, 76, 87, 0.22);
+}
+
 .metricLabel {
   color: #8f99b2;
   font-size: 0.78rem;
@@ -111,6 +175,17 @@
   line-height: 1.25;
   margin-bottom: 10px;
   word-break: break-word;
+}
+
+.metricFieldInput {
+  margin-top: 15px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
 }
 
 .metricAccent {
@@ -178,6 +253,47 @@
   font-weight: 600;
   line-height: 1.35;
   word-break: break-word;
+}
+
+.cardInput,
+.inlineFieldInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.notesPlaceholder {
+  width: 100%;
+  min-height: 180px;
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.addCowButtonGhost {
+  background: transparent;
+  border: 1px solid rgba(199, 70, 82, 0.18);
+  color: #d36b74;
+  box-shadow: none;
+}
+
+.addCowButtonSuccess {
+  background: linear-gradient(180deg, #5fbf7a 0%, #3d8b40 100%);
+  box-shadow: 0 12px 28px rgba(76, 175, 80, 0.35);
+}
+
+.activityCardHeader {
+  margin-top: 10px;
+}
+
+.fullWidthRow {
+  margin-top: 20px;
 }
 
 .rightSummaryCard {
@@ -355,7 +471,8 @@
   box-shadow: 0 4px 12px rgba(62, 207, 142, 0.3);
 }
 
-.infoTile:hover {
+.infoTile:hover,
+.infoTileInteractive:hover {
   background: rgba(255, 255, 255, 0.03);
   cursor: pointer;
 }
