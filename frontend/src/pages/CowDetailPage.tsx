@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getActivities } from "../services/activityService";
 import {
+  type CreateCowInput,
   deleteCow,
   getCowById,
   restoreCow,
@@ -9,6 +11,12 @@ import {
 import type { Cow } from "../types/cow";
 import "../styles/CowDetailPage.css";
 import Notes from "../components/Notes";
+
+type ActivityLogEntry = {
+  id: number;
+  description: string;
+  createdAt: string;
+};
 
 const editableFields = [
   "ownerName",
@@ -46,15 +54,37 @@ function getOwnerInitial(name: string | null | undefined) {
   return name.trim().charAt(0).toUpperCase() || "?";
 }
 
+function toCreateCowInput(cow: Cow): CreateCowInput {
+  return {
+    tagNumber: cow.tagNumber,
+    ownerName: cow.ownerName,
+    livestockGroup: cow.livestockGroup,
+    breed: cow.breed,
+    sex: cow.sex,
+    healthStatus: cow.healthStatus,
+    heatStatus: cow.heatStatus ?? null,
+    breedingStatus: cow.breedingStatus ?? null,
+    dateOfBirth: cow.dateOfBirth ?? null,
+    purchaseDate: cow.purchaseDate ?? null,
+    saleDate: cow.saleDate ?? null,
+    purchasePrice: cow.purchasePrice ?? null,
+    salePrice: cow.salePrice ?? null,
+    notes: cow.notes ?? null,
+  };
+}
+
 function CowDetailPage() {
   const { id } = useParams();
   const [cow, setCow] = useState<Cow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  // const [isEditing, setIsEditing] = useState(false);
+
   const [formData, setFormData] = useState<Cow | null>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
+  const [activities, setActivities] = useState<ActivityLogEntry[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(false);
+  const [activitiesError, setActivitiesError] = useState("");
 
   useEffect(() => {
     async function loadCow() {
@@ -74,6 +104,42 @@ function CowDetailPage() {
 
     loadCow();
   }, [id]);
+
+  useEffect(() => {
+    async function loadActivities() {
+      if (!cow?.id) return;
+
+      setLoadingActivities(true);
+      setActivitiesError("");
+
+      try {
+        const data = await getActivities(cow.id);
+        setActivities(data);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to load activities";
+        setActivitiesError(message);
+      } finally {
+        setLoadingActivities(false);
+      }
+    }
+
+    loadActivities();
+  }, [cow?.id]);
+
+  async function refreshActivities() {
+    if (!cow?.id) return;
+    setActivitiesError("");
+
+    try {
+      const data = await getActivities(cow.id);
+      setActivities(data);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to load activities";
+      setActivitiesError(message);
+    }
+  }
 
   async function handleDelete() {
     if (!cow) return;
@@ -104,6 +170,7 @@ function CowDetailPage() {
 
     try {
       await restoreCow(cow.id);
+      await refreshActivities();
       navigate("/removed");
     } catch (err) {
       const message =
@@ -139,9 +206,10 @@ function CowDetailPage() {
     const prev = cow; // store previous state
 
     try {
-      const updated = await updateCow(cow.id, formData);
+      const updated = await updateCow(cow.id, toCreateCowInput(formData));
       setCow(updated);
       setFormData(updated);
+      await refreshActivities();
     } catch (err) {
       let message = "Failed to update cow";
       const apiErr = err as any;
@@ -265,6 +333,7 @@ function CowDetailPage() {
                         const updated = await updateCow(cow.id, next);
                         setCow(updated);
                         setFormData(updated);
+                        await refreshActivities();
                       }}
                       style={{
                         height: "60px",
@@ -306,6 +375,7 @@ function CowDetailPage() {
                         const updated = await updateCow(cow.id, next);
                         setCow(updated);
                         setFormData(updated);
+                        await refreshActivities();
                       }}
                       style={{
                         height: "60px",
@@ -816,6 +886,14 @@ function CowDetailPage() {
                           }
                         }}
                         autoFocus
+                        style={{
+                          width: "100%",
+                          background: "transparent",
+                          border: "none",
+                          outline: "none",
+                          color: "inherit",
+                          font: "inherit",
+                        }}
                       />
                     ) : (
                       <span>{formatCurrency(formData?.purchasePrice)}</span>
@@ -860,6 +938,14 @@ function CowDetailPage() {
                           }
                         }}
                         autoFocus
+                        style={{
+                          width: "100%",
+                          background: "transparent",
+                          border: "none",
+                          outline: "none",
+                          color: "inherit",
+                          font: "inherit",
+                        }}
                       />
                     ) : (
                       <span>{formatCurrency(formData?.salePrice)}</span>
@@ -919,38 +1005,25 @@ function CowDetailPage() {
             </div>
 
             <div className="activityList">
-              <div className="activityItem">
-                <div className="activityDot" />
-                <div>
-                  <div className="activityText">
-                    Cow record created in HerdFlow.
+              {loadingActivities ? (
+                <p>Loading...</p>
+              ) : activitiesError ? (
+                <p>{activitiesError}</p>
+              ) : activities.length === 0 ? (
+                <p>No activity yet</p>
+              ) : (
+                activities.map((activity) => (
+                  <div key={activity.id} className="activityItem">
+                    <div className="activityDot" />
+                    <div>
+                      <div className="activityText">{activity.description}</div>
+                      <div className="activityMeta">
+                        {new Date(activity.createdAt).toLocaleString()}
+                      </div>
+                    </div>
                   </div>
-                  <div className="activityMeta">System event</div>
-                </div>
-              </div>
-
-              <div className="activityItem">
-                <div className="activityDot" />
-                <div>
-                  <div className="activityText">
-                    Health status saved as {formatLabel(cow.healthStatus)}.
-                  </div>
-                  <div className="activityMeta">Current profile value</div>
-                </div>
-              </div>
-
-              <div className="activityItem">
-                <div className="activityDot" />
-                <div>
-                  <div className="activityText">
-                    Livestock group assigned to{" "}
-                    {formatValue(cow.livestockGroup)}.
-                  </div>
-                  <div className="activityMeta">
-                    Current herd classification
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </section>
         </div>

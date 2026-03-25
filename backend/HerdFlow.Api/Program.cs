@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<CowService>();
+builder.Services.AddScoped<ActivityLogService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

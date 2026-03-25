@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createCow } from "../services/cowService";
 import "../styles/CowDetailPage.css";
-import Notes from "../components/Notes";
 
 type FormState = {
   tagNumber: string;

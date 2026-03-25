@@ -538,3 +538,40 @@
 .cowDashboardGrid {
   align-items: stretch;
 }
+
+/* Remove number input arrows (spinners) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Style date inputs to match dark inline-edit look */
+input[type="date"] {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font: inherit;
+}
+
+/* Make the calendar icon subtle / visible on dark */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) opacity(0.7);
+  cursor: pointer;
+}
+
+/* Optional: remove inner shadows on some browsers */
+input[type="date"]::-webkit-datetime-edit {
+  color: inherit;
+}
+
+/* Optional: tighten spacing so it looks like text */
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}

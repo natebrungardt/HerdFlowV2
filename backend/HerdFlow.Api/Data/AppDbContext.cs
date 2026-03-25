@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Note> Notes { get; set; }
 
+    public DbSet<ActivityLogEntry> ActivityLogEntries { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cow>()

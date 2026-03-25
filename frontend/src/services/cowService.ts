@@ -6,7 +6,7 @@ if (!API_BASE_URL) {
   throw new Error("VITE_API_URL is not configured");
 }
 
-type CreateCowInput = {
+export type CreateCowInput = {
   tagNumber: string;
   ownerName: string;
   livestockGroup: string;

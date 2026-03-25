@@ -11,10 +11,11 @@ namespace HerdFlow.Api.Controllers;
 public class CowController : ControllerBase
 {
     private readonly CowService _cowService;
-
-    public CowController(CowService cowService)
+    private readonly ActivityLogService _activityLogService;
+    public CowController(CowService cowService, ActivityLogService activityLogService)
     {
         _cowService = cowService;
+        _activityLogService = activityLogService;
     }
 
     [HttpGet]
@@ -111,6 +112,12 @@ public class CowController : ControllerBase
 
         _cowService.RestoreCow(id);
         return Ok();
+    }
+    [HttpGet("{id}/activities")]
+    public async Task<IActionResult> GetActivities(int id)
+    {
+        var activities = await _activityLogService.GetByCowIdAsync(id);
+        return Ok(activities);
     }
 
 }
