@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using HerdFlow.Api.Models.Enums;
 
@@ -31,5 +32,6 @@ public class Cow
     public List<Note> Notes { get; set; } = new();
     public bool IsRemoved { get; set; } = false;
 
+    [JsonIgnore]
     public List<WorkdayCow> WorkdayCows { get; set; } = new();
 }

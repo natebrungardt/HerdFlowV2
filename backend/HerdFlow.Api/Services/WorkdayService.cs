@@ -55,7 +55,7 @@ public class WorkdayService
     {
         return await _context.Workdays
             .Where(w => !w.IsArchived)
-            .OrderByDescending(w => w.Date)
+            .OrderByDescending(w => w.CreatedAt)
             .ToListAsync();
     }
 
@@ -64,7 +64,7 @@ public class WorkdayService
     {
         return await _context.Workdays
             .Where(w => w.IsArchived)
-            .OrderByDescending(w => w.Date)
+            .OrderByDescending(w => w.CreatedAt)
             .ToListAsync();
     }
 
