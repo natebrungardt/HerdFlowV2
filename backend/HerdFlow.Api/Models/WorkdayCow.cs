@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace HerdFlow.Api.Models;
 
 public class WorkdayCow
@@ -5,6 +7,7 @@ public class WorkdayCow
     public int Id { get; set; }
 
     public int WorkdayId { get; set; }
+    [JsonIgnore]
     public Workday Workday { get; set; } = null!;
 
     public int CowId { get; set; }

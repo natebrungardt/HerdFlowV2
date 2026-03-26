@@ -1,12 +1,14 @@
 namespace HerdFlow.Api.Models;
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 public class WorkdayNote
 {
     public int Id { get; set; }
 
     public int WorkdayId { get; set; }
+    [JsonIgnore]
     public Workday Workday { get; set; } = null!;
     [Required]
     [MaxLength(1000)]

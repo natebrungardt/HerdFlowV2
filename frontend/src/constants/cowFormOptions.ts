@@ -5,11 +5,9 @@ export const livestockGroupOptions = [
 ] as const;
 
 export const pregnancyStatusOptions = [
-  { value: "", label: "Select status" },
-  { value: "Open", label: "Open" },
-  // { value: "Bred", label: "Bred" },
-  { value: "Pregnant", label: "Pregnant" },
   { value: "N/A", label: "N/A" },
+  { value: "Open", label: "Open" },
+  { value: "Bred", label: "Bred" },
 ] as const;
 
 export const heatStatusOptions = [

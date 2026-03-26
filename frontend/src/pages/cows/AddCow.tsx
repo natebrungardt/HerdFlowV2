@@ -39,7 +39,7 @@ const initialFormState: FormState = {
   sex: "",
   healthStatus: "Healthy",
   heatStatus: "",
-  pregnancyStatus: "",
+  pregnancyStatus: "N/A",
   hasCalf: false,
   livestockGroup: "",
   dateOfBirth: "",
@@ -98,7 +98,7 @@ function AddCowPage() {
         sex: formData.sex,
         healthStatus: formData.healthStatus || "Healthy",
         heatStatus: formData.heatStatus === "" ? null : formData.heatStatus,
-        pregnancyStatus: formData.pregnancyStatus || null,
+        pregnancyStatus: formData.pregnancyStatus || "N/A",
         hasCalf: formData.hasCalf,
         livestockGroup: formData.livestockGroup,
         dateOfBirth: formData.dateOfBirth || null,
@@ -297,6 +297,10 @@ function AddCowPage() {
                   onChange={handleChange}
                   required
                   placeholder="Tag #"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
                   className="cowTitle heroTitleInput"
                 />
               }

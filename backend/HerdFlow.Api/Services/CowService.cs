@@ -30,6 +30,11 @@ public class CowService
         }
     }
 
+    private static string NormalizePregnancyStatus(string? pregnancyStatus)
+    {
+        return string.IsNullOrWhiteSpace(pregnancyStatus) ? "N/A" : pregnancyStatus.Trim();
+    }
+
     public async Task<List<Cow>> GetCowsAsync()
     {
         return await _context.Cows
@@ -58,7 +63,7 @@ public class CowService
         cow.DateOfBirth = dto.DateOfBirth;
         cow.HealthStatus = dto.HealthStatus;
         cow.HeatStatus = dto.HeatStatus;
-        cow.PregnancyStatus = dto.PregnancyStatus;
+        cow.PregnancyStatus = NormalizePregnancyStatus(dto.PregnancyStatus);
         cow.HasCalf = dto.HasCalf;
         cow.PurchasePrice = dto.PurchasePrice;
         cow.SalePrice = dto.SalePrice;
@@ -89,7 +94,7 @@ public class CowService
             DateOfBirth = dto.DateOfBirth,
             HealthStatus = dto.HealthStatus,
             HeatStatus = dto.HeatStatus,
-            PregnancyStatus = dto.PregnancyStatus,
+            PregnancyStatus = NormalizePregnancyStatus(dto.PregnancyStatus),
             HasCalf = dto.HasCalf,
             PurchasePrice = dto.PurchasePrice,
             SalePrice = dto.SalePrice,

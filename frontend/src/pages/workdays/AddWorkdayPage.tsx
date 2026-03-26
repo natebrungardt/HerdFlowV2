@@ -47,7 +47,7 @@ function AddWorkdayPage() {
     .filter((option) => option.value !== "")
     .map((option) => option.value);
   const pregnancyStatusFilters = pregnancyStatusOptions
-    .filter((option) => option.value !== "" && option.value !== "N/A")
+    .filter((option) => option.value !== "N/A")
     .map((option) => option.value);
 
   useEffect(() => {
@@ -146,13 +146,6 @@ function AddWorkdayPage() {
     );
   }
 
-  function resetFilters() {
-    setActiveHealthStatuses([]);
-    setActiveLivestockGroups([]);
-    setActiveSexes([]);
-    setActivePregnancyStatuses([]);
-  }
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
@@ -227,7 +220,6 @@ function AddWorkdayPage() {
               sexFilters={sexFilters}
               pregnancyStatusFilters={pregnancyStatusFilters}
               onSearchChange={setSearchTerm}
-              onResetFilters={resetFilters}
               onToggleHealthStatus={(value) =>
                 toggleFilter(value, setActiveHealthStatuses)
               }

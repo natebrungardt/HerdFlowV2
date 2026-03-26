@@ -384,6 +384,12 @@
 }
 
 .workdaySelectableRow {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  appearance: none;
   cursor: pointer;
 }
 
@@ -392,17 +398,6 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.03),
     0 0 0 1px rgba(76, 122, 91, 0.08);
-}
-
-.workdayCheckboxWrap {
-  display: flex;
-  align-items: center;
-}
-
-.workdayCheckboxWrap input {
-  width: 18px;
-  height: 18px;
-  accent-color: #6ea97f;
 }
 
 @media (max-width: 960px) {

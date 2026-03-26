@@ -31,7 +31,7 @@ function SelectedCowsSummary({
             >
               <span>Tag #{cow.tagNumber}</span>
               <span className="workdaySelectionPillMeta">
-                {cow.ownerName || "Unknown owner"}
+                {cow.healthStatus || "Unknown health status"}
               </span>
             </button>
           ))}

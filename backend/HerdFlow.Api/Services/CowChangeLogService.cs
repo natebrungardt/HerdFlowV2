@@ -52,6 +52,7 @@ public class CowChangeLogService
         return value switch
         {
             null => "—",
+            bool boolean => boolean ? "Yes" : "No",
             DateOnly date => date.ToString("MMM dd, yyyy"),
             decimal amount => amount.ToString("0.##"),
             _ => value.ToString() ?? "—",

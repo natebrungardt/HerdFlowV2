@@ -96,7 +96,7 @@ function toCreateCowInput(cow: Cow): CreateCowInput {
     sex: cow.sex,
     healthStatus: cow.healthStatus,
     heatStatus: cow.heatStatus ?? null,
-    pregnancyStatus: cow.pregnancyStatus ?? null,
+    pregnancyStatus: cow.pregnancyStatus ?? "N/A",
     hasCalf: cow.hasCalf,
     dateOfBirth: cow.dateOfBirth ?? null,
     purchaseDate: cow.purchaseDate ?? null,
@@ -459,6 +459,10 @@ function CowDetailPage() {
                       onBlur={async () => commitField()}
                       onKeyDown={handleEditableKeyDown}
                       autoFocus
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
                       className="heroTitleInput"
                     />
                   ) : (

@@ -15,7 +15,6 @@ type WorkdayCowSelectorProps = {
   sexFilters: string[];
   pregnancyStatusFilters: string[];
   onSearchChange: (value: string) => void;
-  onResetFilters: () => void;
   onToggleHealthStatus: (value: string) => void;
   onToggleLivestockGroup: (value: string) => void;
   onToggleSex: (value: string) => void;
@@ -38,7 +37,6 @@ function WorkdayCowSelector({
   sexFilters,
   pregnancyStatusFilters,
   onSearchChange,
-  onResetFilters,
   onToggleHealthStatus,
   onToggleLivestockGroup,
   onToggleSex,
@@ -63,10 +61,6 @@ function WorkdayCowSelector({
       />
 
       <div className="filterRow workdayFilterRow">
-        <button className="filterChip" onClick={onResetFilters} type="button">
-          All Cows
-        </button>
-
         {healthStatusFilters.map((filter) => (
           <button
             key={filter}
@@ -123,18 +117,13 @@ function WorkdayCowSelector({
           const isSelected = selectedCowIds.includes(cow.id);
 
           return (
-            <label
+            <button
               key={cow.id}
+              type="button"
               className={`cowRowCard workdaySelectableRow ${isSelected ? "selected" : ""}`.trim()}
+              onClick={() => onToggleCow(cow.id)}
+              aria-pressed={isSelected}
             >
-              <div className="workdayCheckboxWrap">
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => onToggleCow(cow.id)}
-                />
-              </div>
-
               <div className="cowRowMain">
                 <div className="cowRowTitle">Tag #{cow.tagNumber}</div>
                 <div className="cowRowMeta">
@@ -149,11 +138,15 @@ function WorkdayCowSelector({
               </div>
 
               <div className="cowRowActions">
-                <div className={isSelected ? "statusPill" : "statusPill needsTreatment"}>
+                <div
+                  className={
+                    isSelected ? "statusPill" : "statusPill needsTreatment"
+                  }
+                >
                   {isSelected ? "Added" : "Available"}
                 </div>
               </div>
-            </label>
+            </button>
           );
         })
       )}
