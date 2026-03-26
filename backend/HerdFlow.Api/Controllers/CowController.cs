@@ -49,7 +49,14 @@ public class CowController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCow(int id)
     {
-        await _cowService.DeleteCowAsync(id);
+        await _cowService.ArchiveCowAsync(id);
+        return NoContent();
+    }
+
+    [HttpPut("{id}/archive")]
+    public async Task<IActionResult> ArchiveCow(int id)
+    {
+        await _cowService.ArchiveCowAsync(id);
         return NoContent();
     }
 
@@ -60,7 +67,7 @@ public class CowController : ControllerBase
         return Ok(cows);
     }
 
-    [HttpPut("restore/{id}")]
+    [HttpPut("{id}/restore")]
     public async Task<IActionResult> RestoreCow(int id)
     {
         await _cowService.RestoreCowAsync(id);

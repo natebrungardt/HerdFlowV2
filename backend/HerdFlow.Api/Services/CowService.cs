@@ -100,7 +100,7 @@ public class CowService
         return cow;
     }
 
-    public async Task DeleteCowAsync(int id)
+    public async Task ArchiveCowAsync(int id)
     {
         var cow = await FindCowAsync(id);
 

@@ -15,7 +15,7 @@ import {
 import { getActivities } from "../services/activityService";
 import {
   type CreateCowInput,
-  deleteCow,
+  archiveCow,
   getCowById,
   restoreCow,
   updateCow,
@@ -176,7 +176,7 @@ function CowDetailPage() {
     if (!cow) return;
 
     try {
-      await deleteCow(cow.id);
+      await archiveCow(cow.id);
       navigate("/cows");
     } catch (err) {
       const message =

@@ -128,6 +128,17 @@ export async function getCowById(id: number): Promise<Cow> {
   return response.json();
 }
 
+export async function archiveCow(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/${id}/archive`, {
+    method: "PUT",
+  });
+
+  if (!response.ok) {
+    const error = await parseError(response);
+    throw createApiError(error);
+  }
+}
+
 export async function deleteCow(id: number): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "DELETE",
@@ -150,7 +161,7 @@ export async function getRemovedCows(): Promise<Cow[]> {
 }
 
 export async function restoreCow(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/restore/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/${id}/restore`, {
     method: "PUT",
   });
 
