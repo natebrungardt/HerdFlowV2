@@ -10,25 +10,28 @@ import AddWorkdayPage from "./pages/workdays/AddWorkdayPage";
 import WorkdayPage from "./pages/workdays/WorkdayPage";
 import RemovedWorkdays from "./pages/workdays/RemovedWorkdays";
 import { PendingWorkdaySelectionProvider } from "./context/PendingWorkdaySelectionContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <PendingWorkdaySelectionProvider>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/cows" element={<AllCowPage />} />
-          <Route path="/cows/:id" element={<CowDetailPage />} />
-          <Route path="/add-cow" element={<AddCowButton />} />
-          <Route path="/removed" element={<RemovedCows />} />
-          <Route path="/workdays" element={<AllWorkdayPage />} />
-          <Route path="/workdays/new" element={<AddWorkdayPage />} />
-          <Route path="/workdays/:id" element={<WorkdayPage />} />
-          <Route path="/workdays/removed" element={<RemovedWorkdays />} />
-        </Routes>
-      </PendingWorkdaySelectionProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <PendingWorkdaySelectionProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/cows" element={<AllCowPage />} />
+            <Route path="/cows/:id" element={<CowDetailPage />} />
+            <Route path="/add-cow" element={<AddCowButton />} />
+            <Route path="/removed" element={<RemovedCows />} />
+            <Route path="/workdays" element={<AllWorkdayPage />} />
+            <Route path="/workdays/new" element={<AddWorkdayPage />} />
+            <Route path="/workdays/:id" element={<WorkdayPage />} />
+            <Route path="/workdays/removed" element={<RemovedWorkdays />} />
+          </Routes>
+        </PendingWorkdaySelectionProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

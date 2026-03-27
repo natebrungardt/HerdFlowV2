@@ -24,6 +24,10 @@ function formatDateLabel(dateValue: string) {
   }).format(date);
 }
 
+function formatLabel(value: string) {
+  return value.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
 function Dashboard() {
   const [cows, setCows] = useState<Cow[]>([]);
   const [archivedCows, setArchivedCows] = useState<Cow[]>([]);
@@ -217,7 +221,9 @@ function Dashboard() {
                             </div>
                             <div className="cowRowMeta">
                               {cow.livestockGroup || "Unassigned"} •{" "}
-                              {cow.healthStatus || "Unknown health status"}
+                              {cow.healthStatus
+                                ? formatLabel(cow.healthStatus)
+                                : "Unknown health status"}
                             </div>
                             <div className="cowRowOwner">
                               Owner: {cow.ownerName || "Unknown owner"}
@@ -226,7 +232,9 @@ function Dashboard() {
 
                           <div className="cowRowActions">
                             <div className="statusPill needsTreatment">
-                              {cow.healthStatus || "Needs attention"}
+                              {cow.healthStatus
+                                ? formatLabel(cow.healthStatus)
+                                : "Needs attention"}
                             </div>
                           </div>
                         </Link>

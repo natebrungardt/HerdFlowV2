@@ -27,6 +27,7 @@ export default function Modal({
 
         <div className="modalActions">
           <button
+            className="cancelButton"
             onClick={(e) => {
               e.stopPropagation();
               onCancel();
@@ -38,7 +39,6 @@ export default function Modal({
             className={confirmText === "Restore Cow" ? "success" : "danger"}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("MODAL BUTTON CLICKED");
               onConfirm();
             }}
           >

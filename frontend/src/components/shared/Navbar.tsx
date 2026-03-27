@@ -1,12 +1,14 @@
 import { useState, type MouseEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePendingWorkdaySelection } from "../../context/PendingWorkdaySelectionContext";
+import { useTheme } from "../../context/ThemeContext";
 import Modal from "./Modal";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { hasPendingSelections } = usePendingWorkdaySelection();
+  const { theme, toggleTheme } = useTheme();
   const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   function handleNavbarNavigation(targetPath: string) {
@@ -32,9 +34,17 @@ function Navbar() {
           to="/"
           onClick={handleNavbarNavigation("/")}
         >
+          <img
+            className="navbar-logo"
+            src="/herdflow-mark.svg"
+            alt="HerdFlow logo"
+          />
           HerdFlow
         </Link>
         <div className="navbar-links">
+          <button className="themeToggleButton" onClick={toggleTheme}>
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
+          </button>
           <Link to="/" onClick={handleNavbarNavigation("/")}>
             Dashboard
           </Link>

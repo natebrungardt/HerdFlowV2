@@ -1,11 +1,12 @@
 .modalCard {
-  background: linear-gradient(180deg, #0f1f17 0%, #0b1812 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--modal-bg);
+  border: 1px solid var(--card-border);
   border-radius: 16px;
   padding: 24px;
   width: 400px;
   max-width: 90%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  color: var(--text-primary);
 }
 
 .modalActions {
@@ -26,12 +27,12 @@
 
 /* Cancel button */
 .modalActions .cancelButton {
-  background: rgba(255, 255, 255, 0.08);
-  color: #d1d5db;
+  background: var(--surface-strong);
+  color: var(--text-secondary);
 }
 
 .modalActions .cancelButton:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--surface-subtle-hover);
 }
 
 /* Remove button */
@@ -62,7 +63,7 @@
   align-items: center;
   justify-content: center;
 
-  background: rgba(0, 0, 0, 0.6); /* dark overlay */
+  background: var(--modal-overlay);
   backdrop-filter: blur(4px); /* nice blur effect */
 
   z-index: 9999; /* 👈 makes sure it's on top of everything */
