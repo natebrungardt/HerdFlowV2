@@ -5,8 +5,7 @@ if (!API_BASE_URL) {
 }
 
 export async function getActivities(cowId: string) {
-  const res = await fetch(`${API_BASE_URL}/${cowId}/activities`);
-
+  const res = await fetch(`${API_BASE_URL}/cows/${cowId}/activities`);
   if (!res.ok) {
     throw new Error("Failed to load activities");
   }

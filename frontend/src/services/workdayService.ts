@@ -1,13 +1,12 @@
 import type { Workday } from "../types/workday";
 
-const COW_API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-if (!COW_API_BASE_URL) {
+if (API_BASE_URL) {
   throw new Error("VITE_API_URL is not configured");
 }
 
-const WORKDAY_API_BASE_URL = COW_API_BASE_URL.replace(/\/cows\/?$/, "/workdays");
-
+const WORKDAY_API_BASE_URL = `${API_BASE_URL}/workdays`;
 type ApiError = {
   status?: number;
   message: string;

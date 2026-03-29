@@ -76,7 +76,7 @@ async function parseError(response: Response): Promise<ApiError> {
 }
 
 export async function getCows(): Promise<Cow[]> {
-  const response = await fetch(API_BASE_URL);
+  const response = await fetch(`${API_BASE_URL}/cows`);
 
   if (!response.ok) {
     const error = await parseError(response);
@@ -87,7 +87,7 @@ export async function getCows(): Promise<Cow[]> {
 }
 
 export async function createCow(cowData: CreateCowInput): Promise<Cow> {
-  const response = await fetch(API_BASE_URL, {
+  const response = await fetch(`${API_BASE_URL}/cows`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export async function createCow(cowData: CreateCowInput): Promise<Cow> {
 }
 
 export async function getCowById(id: string): Promise<Cow> {
-  const response = await fetch(`${API_BASE_URL}/${id}`);
+  const response = await fetch(`${API_BASE_URL}/cows/${id}`);
 
   if (!response.ok) {
     const error = await parseError(response);
@@ -131,7 +131,7 @@ export async function getCowById(id: string): Promise<Cow> {
 }
 
 export async function archiveCow(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/${id}/archive`, {
+  const response = await fetch(`${API_BASE_URL}/cows/${id}/archive`, {
     method: "PUT",
   });
 
@@ -142,7 +142,7 @@ export async function archiveCow(id: string): Promise<void> {
 }
 
 export async function deleteCow(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/cows/${id}`, {
     method: "DELETE",
   });
 
@@ -152,7 +152,7 @@ export async function deleteCow(id: string): Promise<void> {
   }
 }
 export async function getRemovedCows(): Promise<Cow[]> {
-  const response = await fetch(`${API_BASE_URL}/removed`);
+  const response = await fetch(`${API_BASE_URL}/cows/removed`);
 
   if (!response.ok) {
     const error = await parseError(response);
@@ -163,7 +163,7 @@ export async function getRemovedCows(): Promise<Cow[]> {
 }
 
 export async function restoreCow(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/${id}/restore`, {
+  const response = await fetch(`${API_BASE_URL}/cows/${id}/restore`, {
     method: "PUT",
   });
 
@@ -177,7 +177,7 @@ export async function updateCow(
   id: string,
   cowData: CreateCowInput,
 ): Promise<Cow> {
-  const response = await fetch(`${API_BASE_URL}/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/cows/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

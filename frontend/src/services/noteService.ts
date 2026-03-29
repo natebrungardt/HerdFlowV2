@@ -63,7 +63,7 @@ async function parseError(response: Response): Promise<ApiError> {
 }
 
 export async function getNotes(cowId: string): Promise<Note[]> {
-  const response = await fetch(`${API_BASE_URL}/${cowId}/notes`);
+  const response = await fetch(`${API_BASE_URL}/cows/${cowId}/notes`);
 
   if (!response.ok) {
     throw createApiError(await parseError(response));
@@ -76,7 +76,7 @@ export async function createNote(
   cowId: string,
   content: string,
 ): Promise<Note> {
-  const response = await fetch(`${API_BASE_URL}/${cowId}/notes`, {
+  const response = await fetch(`${API_BASE_URL}/cows/${cowId}/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -92,9 +92,12 @@ export async function createNote(
 }
 
 export async function deleteNote(cowId: string, noteId: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/${cowId}/notes/${noteId}`, {
-    method: "DELETE",
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/cows/${cowId}/notes/${noteId}`,
+    {
+      method: "DELETE",
+    },
+  );
 
   if (!response.ok) {
     throw createApiError(await parseError(response));
@@ -106,13 +109,16 @@ export async function updateNote(
   noteId: string,
   content: string,
 ): Promise<Note> {
-  const response = await fetch(`${API_BASE_URL}/${cowId}/notes/${noteId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${API_BASE_URL}/cows/${cowId}/notes/${noteId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content }),
     },
-    body: JSON.stringify({ content }),
-  });
+  );
 
   if (!response.ok) {
     throw createApiError(await parseError(response));
