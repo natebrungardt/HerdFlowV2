@@ -4,9 +4,13 @@ namespace HerdFlow.Api.Models;
 
 public class Note
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public int CowId { get; set; }
+    [Required]
+    public string UserId { get; set; } = null!;
+
+    public Guid CowId { get; set; }
+
     [Required]
     [MaxLength(1000)]
     public string Content { get; set; } = null!;
