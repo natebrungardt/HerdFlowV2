@@ -41,56 +41,56 @@ public class WorkdayController : ControllerBase
     }
 
     // GET: api/workdays/{id}
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Workday>> GetWorkdayById(int id)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<Workday>> GetWorkdayById(Guid id)
     {
         var workday = await _service.GetWorkdayById(id);
         return Ok(workday);
     }
 
     // POST: api/workdays/{id}/cows
-    [HttpPost("{id}/cows")]
-    public async Task<ActionResult> AddCowsToWorkday(int id, [FromBody] UpdateWorkdayCowsDto dto)
+    [HttpPost("{id:guid}/cows")]
+    public async Task<ActionResult> AddCowsToWorkday(Guid id, [FromBody] UpdateWorkdayCowsDto dto)
     {
         await _service.AddCowsToWorkday(id, dto.CowIds);
         return NoContent();
     }
 
     // DELETE: api/workdays/{id}/cows/{cowId}
-    [HttpDelete("{id}/cows/{cowId}")]
-    public async Task<ActionResult> RemoveCowFromWorkday(int id, int cowId)
+    [HttpDelete("{id:guid}/cows/{cowId:guid}")]
+    public async Task<ActionResult> RemoveCowFromWorkday(Guid id, Guid cowId)
     {
         await _service.RemoveCowFromWorkday(id, cowId);
         return NoContent();
     }
 
     // PUT: api/workdays/{id}/archive
-    [HttpPut("{id}/archive")]
-    public async Task<ActionResult> ArchiveWorkday(int id)
+    [HttpPut("{id:guid}/archive")]
+    public async Task<ActionResult> ArchiveWorkday(Guid id)
     {
         await _service.ArchiveWorkday(id);
         return NoContent();
     }
 
     // PUT: api/workdays/{id}/restore
-    [HttpPut("{id}/restore")]
-    public async Task<ActionResult> RestoreWorkday(int id)
+    [HttpPut("{id:guid}/restore")]
+    public async Task<ActionResult> RestoreWorkday(Guid id)
     {
         await _service.RestoreWorkday(id);
         return Ok();
     }
 
     // DELETE: api/workdays/{id}
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteWorkday(int id)
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeleteWorkday(Guid id)
     {
         await _service.DeleteWorkday(id);
         return NoContent();
     }
 
     // PUT: api/workdays/{id}
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Workday>> UpdateWorkday(int id, UpdateWorkdayDto dto)
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<Workday>> UpdateWorkday(Guid id, UpdateWorkdayDto dto)
     {
         var updated = await _service.UpdateWorkday(id, dto);
         return Ok(updated);

@@ -1,10 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HerdFlow.Api.Models;
 
 public class ActivityLogEntry
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-    public int CowId { get; set; }
+    [Required]
+    public string UserId { get; set; } = null!;
+
+    [Required]
+    public Guid CowId { get; set; }
     public Cow? Cow { get; set; }
 
     public string Description { get; set; } = string.Empty;

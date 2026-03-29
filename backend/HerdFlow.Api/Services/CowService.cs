@@ -2,6 +2,7 @@ using HerdFlow.Api.DTOs;
 using HerdFlow.Api.Models;
 using HerdFlow.Api.Data;
 using HerdFlow.Api.Exceptions;
+using HerdFlow.Api.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
@@ -54,13 +55,13 @@ public class CowService
             .ToListAsync();
     }
 
-    public async Task<Cow> GetCowByIdAsync(int id)
+    public async Task<Cow> GetCowByIdAsync(Guid id)
     {
         var cow = await _context.Cows.FirstOrDefaultAsync(c => c.Id == id);
         return cow ?? throw new NotFoundException("Cow not found.");
     }
 
-    public async Task<Cow> UpdateCowAsync(int id, CreateCowDto dto)
+    public async Task<Cow> UpdateCowAsync(Guid id, CreateCowDto dto)
     {
         var cow = await FindCowAsync(id);
         ValidateCreateCow(dto);
@@ -100,6 +101,7 @@ public class CowService
 
         var cow = new Cow
         {
+            UserId = string.Empty,
             TagNumber = normalizedTagNumber,
             OwnerName = dto.OwnerName,
             LivestockGroup = dto.LivestockGroup,
@@ -121,7 +123,7 @@ public class CowService
         return cow;
     }
 
-    public async Task ArchiveCowAsync(int id)
+    public async Task ArchiveCowAsync(Guid id)
     {
         var cow = await FindCowAsync(id);
 
@@ -137,7 +139,7 @@ public class CowService
             .ToListAsync();
     }
 
-    public async Task RestoreCowAsync(int id)
+    public async Task RestoreCowAsync(Guid id)
     {
         var cow = await FindCowAsync(id);
 
@@ -146,13 +148,13 @@ public class CowService
         await _activityLogService.LogAsync(cow.Id, "Cow restored to herd");
     }
 
-    private async Task<Cow> FindCowAsync(int id)
+    private async Task<Cow> FindCowAsync(Guid id)
     {
         var cow = await _context.Cows.FindAsync(id);
         return cow ?? throw new NotFoundException("Cow not found.");
     }
 
-    private async Task EnsureTagNumberIsUniqueAsync(string tagNumber, int? excludeCowId = null)
+    private async Task EnsureTagNumberIsUniqueAsync(string tagNumber, Guid? excludeCowId = null)
     {
         var exists = await _context.Cows.AnyAsync(c =>
             c.TagNumber == tagNumber && (!excludeCowId.HasValue || c.Id != excludeCowId.Value));

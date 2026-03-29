@@ -5,7 +5,7 @@ type WorkdayCowSelectorProps = {
   loading: boolean;
   error: string;
   searchTerm: string;
-  selectedCowIds: number[];
+  selectedCowIds: string[];
   activeHealthStatuses: string[];
   activeLivestockGroups: string[];
   activeSexes: string[];
@@ -19,7 +19,7 @@ type WorkdayCowSelectorProps = {
   onToggleLivestockGroup: (value: string) => void;
   onToggleSex: (value: string) => void;
   onTogglePregnancyStatus: (value: string) => void;
-  onToggleCow: (cowId: number) => void;
+  onToggleCow: (cowId: string) => void;
 };
 
 function WorkdayCowSelector({

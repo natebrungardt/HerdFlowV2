@@ -15,7 +15,7 @@ public class NoteService
         _context = context;
     }
 
-    public async Task<List<Note>> GetNotesAsync(int cowId)
+    public async Task<List<Note>> GetNotesAsync(Guid cowId)
     {
         return await _context.Notes
             .Where(n => n.CowId == cowId)
@@ -23,7 +23,7 @@ public class NoteService
             .ToListAsync();
     }
 
-    public async Task<Note> CreateNoteAsync(int cowId, CreateNoteDto dto)
+    public async Task<Note> CreateNoteAsync(Guid cowId, CreateNoteDto dto)
     {
         await EnsureCowExistsAsync(cowId);
         ValidateNoteContent(dto.Content);
@@ -31,6 +31,7 @@ public class NoteService
 
         var note = new Note
         {
+            UserId = string.Empty,
             CowId = cowId,
             Content = dto.Content.Trim(),
             CreatedAt = now,
@@ -43,7 +44,7 @@ public class NoteService
         return note;
     }
 
-    public async Task DeleteNoteAsync(int cowId, int noteId)
+    public async Task DeleteNoteAsync(Guid cowId, Guid noteId)
     {
         var note = await FindNoteAsync(cowId, noteId);
 
@@ -51,7 +52,7 @@ public class NoteService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Note> UpdateNoteAsync(int cowId, int noteId, CreateNoteDto dto)
+    public async Task<Note> UpdateNoteAsync(Guid cowId, Guid noteId, CreateNoteDto dto)
     {
         var note = await FindNoteAsync(cowId, noteId);
         ValidateNoteContent(dto.Content);
@@ -63,7 +64,7 @@ public class NoteService
         return note;
     }
 
-    private async Task EnsureCowExistsAsync(int cowId)
+    private async Task EnsureCowExistsAsync(Guid cowId)
     {
         var exists = await _context.Cows.AnyAsync(c => c.Id == cowId);
 
@@ -73,7 +74,7 @@ public class NoteService
         }
     }
 
-    private async Task<Note> FindNoteAsync(int cowId, int noteId)
+    private async Task<Note> FindNoteAsync(Guid cowId, Guid noteId)
     {
         var note = await _context.Notes
             .FirstOrDefaultAsync(n => n.Id == noteId && n.CowId == cowId);

@@ -25,7 +25,7 @@ import type { Cow } from "../../types/cow";
 import "../../styles/CowDetailPage.css";
 
 type ActivityLogEntry = {
-  id: number;
+  id: string;
   description: string;
   createdAt: string;
 };
@@ -130,7 +130,7 @@ function CowDetailPage() {
     async function loadCow() {
       try {
         if (!id) return;
-        const data = await getCowById(Number(id));
+        const data = await getCowById(id);
         setCow(data);
         setFormData(data);
       } catch (err) {
@@ -142,7 +142,7 @@ function CowDetailPage() {
       }
     }
 
-    loadCow();
+    void loadCow();
   }, [id]);
 
   useEffect(() => {
@@ -164,7 +164,7 @@ function CowDetailPage() {
       }
     }
 
-    loadActivities();
+    void loadActivities();
   }, [cow?.id]);
 
   async function refreshActivities() {

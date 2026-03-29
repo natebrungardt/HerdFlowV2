@@ -2,9 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HerdFlow.Api.Models;
 
+[Index(nameof(UserId))]
 public class Workday
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     [Required]
     public string UserId { get; set; } = null!;
     [Required]
@@ -19,5 +20,4 @@ public class Workday
     // Relationships
     public List<WorkdayCow> WorkdayCows { get; set; } = new();
     public List<WorkdayNote> WorkdayNotes { get; set; } = new();
-
 }

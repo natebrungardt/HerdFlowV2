@@ -26,7 +26,7 @@ function AddWorkdayPage() {
   const [summary, setSummary] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [cows, setCows] = useState<Cow[]>([]);
-  const [selectedCowIds, setSelectedCowIds] = useState<number[]>([]);
+  const [selectedCowIds, setSelectedCowIds] = useState<string[]>([]);
   const [activeHealthStatuses, setActiveHealthStatuses] = useState<string[]>(
     [],
   );
@@ -142,7 +142,7 @@ function AddWorkdayPage() {
     if (name === "summary") setSummary(value);
   }
 
-  function toggleCow(cowId: number) {
+  function toggleCow(cowId: string) {
     setSelectedCowIds((current) =>
       current.includes(cowId)
         ? current.filter((id) => id !== cowId)
@@ -150,7 +150,7 @@ function AddWorkdayPage() {
     );
   }
 
-  function promptSelectedCowRemoval(cowId: number) {
+  function promptSelectedCowRemoval(cowId: string) {
     const cowToRemove = selectedCows.find((cow) => cow.id === cowId) ?? null;
     setPendingCowRemoval(cowToRemove);
   }

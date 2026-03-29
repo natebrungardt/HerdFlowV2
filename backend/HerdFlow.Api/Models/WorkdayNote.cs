@@ -5,10 +5,10 @@ using System.Text.Json.Serialization;
 
 public class WorkdayNote
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     [Required]
     public string UserId { get; set; } = null!;
-
+    [Required]
     public Guid WorkdayId { get; set; }
     [JsonIgnore]
     public Workday Workday { get; set; } = null!;
@@ -20,4 +20,3 @@ public class WorkdayNote
 
     public DateTime? UpdatedAt { get; set; } // for future editing
 }
-// currently not used in app

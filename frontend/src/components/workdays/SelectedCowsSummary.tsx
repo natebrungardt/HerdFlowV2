@@ -2,7 +2,7 @@ import type { Cow } from "../../types/cow";
 
 type SelectedCowsSummaryProps = {
   selectedCows: Cow[];
-  onRemove: (cowId: number) => void;
+  onRemove: (cowId: string) => void;
   title?: string;
   emptyMessage?: string;
   countLabel?: string;

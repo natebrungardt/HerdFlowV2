@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using HerdFlow.Api.Models;
-using System.Net.Http.Headers;
 
 namespace HerdFlow.Api.Data;
 
@@ -32,7 +31,6 @@ public class AppDbContext : DbContext
             .HasIndex(wc => new { wc.WorkdayId, wc.CowId })
             .IsUnique();
 
-        // 👇 ADD THIS
         modelBuilder.Entity<WorkdayCow>()
             .HasOne(wc => wc.Workday)
             .WithMany(w => w.WorkdayCows)

@@ -2,5 +2,5 @@ namespace HerdFlow.Api.DTOs;
 
 public class UpdateWorkdayCowsDto
 {
-    public List<int> CowIds { get; set; } = new();
+    public List<Guid> CowIds { get; set; } = new();
 }

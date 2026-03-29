@@ -4,7 +4,7 @@ namespace HerdFlow.Api.Models;
 
 public class WorkdayCow
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public Guid WorkdayId { get; set; }
     [JsonIgnore]

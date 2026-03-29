@@ -113,7 +113,10 @@ function Dashboard() {
 
   const recentArchivedCows = useMemo(() => {
     return [...archivedCows].sort((leftCow, rightCow) => {
-      return rightCow.id - leftCow.id;
+      return leftCow.tagNumber.localeCompare(rightCow.tagNumber, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
     });
   }, [archivedCows]);
 

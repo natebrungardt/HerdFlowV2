@@ -9,9 +9,9 @@ public class CreateWorkdayDto
     [MaxLength(120)]
     public string Title { get; set; } = string.Empty;
 
-    public DateTime? Date { get; set; }
+    public DateOnly? Date { get; set; }
 
     public string? Summary { get; set; }
 
-    public List<int> CowIds { get; set; } = new();
+    public List<Guid> CowIds { get; set; } = new();
 }

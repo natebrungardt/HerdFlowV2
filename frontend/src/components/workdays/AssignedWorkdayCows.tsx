@@ -2,8 +2,8 @@ import type { WorkdayCowAssignment } from "../../types/workday";
 
 type AssignedWorkdayCowsProps = {
   assignments: WorkdayCowAssignment[];
-  removingCowId: number | null;
-  onRemove: (cowId: number) => void;
+  removingCowId: string | null;
+  onRemove: (cowId: string) => void;
 };
 
 function AssignedWorkdayCows({

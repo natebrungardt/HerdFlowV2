@@ -4,7 +4,7 @@ if (!API_BASE_URL) {
   throw new Error("VITE_API_URL is not configured");
 }
 
-export async function getActivities(cowId: number) {
+export async function getActivities(cowId: string) {
   const res = await fetch(`${API_BASE_URL}/${cowId}/activities`);
 
   if (!res.ok) {

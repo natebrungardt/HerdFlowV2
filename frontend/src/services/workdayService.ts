@@ -17,7 +17,7 @@ export type CreateWorkdayInput = {
   title: string;
   date: string | null;
   summary: string | null;
-  cowIds: number[];
+  cowIds: string[];
 };
 
 export type UpdateWorkdayInput = {
@@ -94,7 +94,7 @@ export async function getArchivedWorkdays(): Promise<Workday[]> {
   return response.json();
 }
 
-export async function getWorkdayById(id: number): Promise<Workday> {
+export async function getWorkdayById(id: string): Promise<Workday> {
   const response = await fetch(`${WORKDAY_API_BASE_URL}/${id}`);
 
   if (!response.ok) {
@@ -130,7 +130,7 @@ export async function createWorkday(
 }
 
 export async function updateWorkday(
-  id: number,
+  id: string,
   workdayData: UpdateWorkdayInput,
 ): Promise<Workday> {
   const response = await fetch(`${WORKDAY_API_BASE_URL}/${id}`, {
@@ -149,7 +149,7 @@ export async function updateWorkday(
   return response.json();
 }
 
-export async function archiveWorkday(id: number): Promise<void> {
+export async function archiveWorkday(id: string): Promise<void> {
   const response = await fetch(`${WORKDAY_API_BASE_URL}/${id}/archive`, {
     method: "PUT",
   });
@@ -160,7 +160,7 @@ export async function archiveWorkday(id: number): Promise<void> {
   }
 }
 
-export async function restoreWorkday(id: number): Promise<void> {
+export async function restoreWorkday(id: string): Promise<void> {
   const response = await fetch(`${WORKDAY_API_BASE_URL}/${id}/restore`, {
     method: "PUT",
   });
@@ -172,8 +172,8 @@ export async function restoreWorkday(id: number): Promise<void> {
 }
 
 export async function addCowsToWorkday(
-  id: number,
-  cowIds: number[],
+  id: string,
+  cowIds: string[],
 ): Promise<void> {
   const response = await fetch(`${WORKDAY_API_BASE_URL}/${id}/cows`, {
     method: "POST",
@@ -190,8 +190,8 @@ export async function addCowsToWorkday(
 }
 
 export async function removeCowFromWorkday(
-  id: number,
-  cowId: number,
+  id: string,
+  cowId: string,
 ): Promise<void> {
   const response = await fetch(`${WORKDAY_API_BASE_URL}/${id}/cows/${cowId}`, {
     method: "DELETE",

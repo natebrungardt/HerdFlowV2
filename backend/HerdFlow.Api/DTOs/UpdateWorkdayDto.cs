@@ -8,5 +8,5 @@ public class UpdateWorkdayDto
     [MaxLength(120)]
     public string Title { get; set; } = string.Empty;
     public string? Summary { get; set; }
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 }

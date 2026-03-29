@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HerdFlow.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260325214719_AddWorkdayModels")]
-    partial class AddWorkdayModels
+    [Migration("20260329035604_InitialGuidSchema")]
+    partial class InitialGuidSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,14 +27,12 @@ namespace HerdFlow.Api.Migrations
 
             modelBuilder.Entity("HerdFlow.Api.Models.ActivityLogEntry", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CowId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("CowId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -52,20 +50,18 @@ namespace HerdFlow.Api.Migrations
 
             modelBuilder.Entity("HerdFlow.Api.Models.Cow", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Breed")
                         .HasColumnType("text");
 
-                    b.Property<string>("BreedingStatus")
-                        .HasColumnType("text");
-
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
+
+                    b.Property<bool>("HasCalf")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("HealthStatus")
                         .IsRequired()
@@ -82,6 +78,9 @@ namespace HerdFlow.Api.Migrations
 
                     b.Property<string>("OwnerName")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PregnancyStatus")
                         .HasColumnType("text");
 
                     b.Property<DateOnly?>("PurchaseDate")
@@ -103,9 +102,13 @@ namespace HerdFlow.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("TagNumber")
+                    b.HasIndex("UserId", "TagNumber")
                         .IsUnique();
 
                     b.ToTable("Cows");
@@ -113,25 +116,27 @@ namespace HerdFlow.Api.Migrations
 
             modelBuilder.Entity("HerdFlow.Api.Models.Note", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<int>("CowId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("CowId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -142,22 +147,28 @@ namespace HerdFlow.Api.Migrations
 
             modelBuilder.Entity("HerdFlow.Api.Models.Workday", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Summary")
                         .HasColumnType("text");
 
                     b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -168,20 +179,18 @@ namespace HerdFlow.Api.Migrations
 
             modelBuilder.Entity("HerdFlow.Api.Models.WorkdayCow", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CowId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("CowId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
-                    b.Property<int>("WorkdayId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("WorkdayId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -195,11 +204,9 @@ namespace HerdFlow.Api.Migrations
 
             modelBuilder.Entity("HerdFlow.Api.Models.WorkdayNote", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -212,8 +219,12 @@ namespace HerdFlow.Api.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("WorkdayId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("WorkdayId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 

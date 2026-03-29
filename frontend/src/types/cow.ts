@@ -1,5 +1,5 @@
 export type Cow = {
-  id: number;
+  id: string;
   tagNumber: string;
   ownerName: string;
   livestockGroup: string;

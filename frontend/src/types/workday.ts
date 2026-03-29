@@ -1,15 +1,15 @@
 import type { Cow } from "./cow";
 
 export type WorkdayCowAssignment = {
-  id: number;
-  workdayId: number;
-  cowId: number;
+  id: string;
+  workdayId: string;
+  cowId: string;
   status?: string | null;
   cow: Cow;
 };
 
 export type Workday = {
-  id: number;
+  id: string;
   title: string;
   date: string;
   summary?: string | null;

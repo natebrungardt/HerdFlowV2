@@ -9,7 +9,7 @@ import {
 import Modal from "../shared/Modal";
 
 type Props = {
-  cowId: number;
+  cowId: string;
 };
 
 function Notes({ cowId }: Props) {
@@ -17,7 +17,7 @@ function Notes({ cowId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [newNote, setNewNote] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [notePendingDelete, setNotePendingDelete] = useState<Note | null>(null);
 
@@ -55,7 +55,7 @@ function Notes({ cowId }: Props) {
     }
   }
 
-  async function handleDelete(noteId: number) {
+  async function handleDelete(noteId: string) {
     try {
       setError("");
       await deleteNote(cowId, noteId);
@@ -73,7 +73,7 @@ function Notes({ cowId }: Props) {
     setEditingContent(note.content);
   }
 
-  async function saveEdit(noteId: number) {
+  async function saveEdit(noteId: string) {
     if (!editingContent.trim()) return;
 
     try {

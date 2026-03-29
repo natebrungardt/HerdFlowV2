@@ -9,7 +9,8 @@ namespace HerdFlow.Api.Models;
 [Index(nameof(UserId), nameof(TagNumber), IsUnique = true)]
 public class Cow
 {
-    public Guid Id { get; set; }
+
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public string UserId { get; set; } = null!;

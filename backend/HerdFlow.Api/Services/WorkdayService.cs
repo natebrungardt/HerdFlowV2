@@ -35,6 +35,7 @@ public class WorkdayService
 
         var workday = new Workday
         {
+            UserId = string.Empty,
             Title = dto.Title.Trim(),
             Date = NormalizeWorkdayDate(dto.Date),
             Summary = dto.Summary,
@@ -69,7 +70,7 @@ public class WorkdayService
     }
 
     // READ - By Id (with cows + notes)
-    public async Task<Workday> GetWorkdayById(int id)
+    public async Task<Workday> GetWorkdayById(Guid id)
     {
         var workday = await _context.Workdays
             .Include(w => w.WorkdayCows)
@@ -80,7 +81,7 @@ public class WorkdayService
         return workday ?? throw new NotFoundException("Workday not found.");
     }
 
-    public async Task AddCowsToWorkday(int id, List<int> cowIds)
+    public async Task AddCowsToWorkday(Guid id, List<Guid> cowIds)
     {
         var workday = await _context.Workdays
             .Include(w => w.WorkdayCows)
@@ -133,7 +134,7 @@ public class WorkdayService
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveCowFromWorkday(int id, int cowId)
+    public async Task RemoveCowFromWorkday(Guid id, Guid cowId)
     {
         var workdayCow = await _context.WorkdayCows
             .FirstOrDefaultAsync(wc => wc.WorkdayId == id && wc.CowId == cowId);
@@ -148,7 +149,7 @@ public class WorkdayService
     }
 
     // UPDATE - Archive Workday
-    public async Task ArchiveWorkday(int id)
+    public async Task ArchiveWorkday(Guid id)
     {
         var workday = await FindWorkdayAsync(id);
 
@@ -157,7 +158,7 @@ public class WorkdayService
     }
 
     // UPDATE - Restore Workday
-    public async Task RestoreWorkday(int id)
+    public async Task RestoreWorkday(Guid id)
     {
         var workday = await FindWorkdayAsync(id);
 
@@ -166,7 +167,7 @@ public class WorkdayService
     }
 
     // DELETE (optional hard delete)
-    public async Task DeleteWorkday(int id)
+    public async Task DeleteWorkday(Guid id)
     {
         var workday = await FindWorkdayAsync(id);
 
@@ -174,13 +175,13 @@ public class WorkdayService
         await _context.SaveChangesAsync();
     }
 
-    private async Task<Workday> FindWorkdayAsync(int id)
+    private async Task<Workday> FindWorkdayAsync(Guid id)
     {
         var workday = await _context.Workdays.FindAsync(id);
         return workday ?? throw new NotFoundException("Workday not found.");
     }
 
-    public async Task<Workday> UpdateWorkday(int id, UpdateWorkdayDto dto)
+    public async Task<Workday> UpdateWorkday(Guid id, UpdateWorkdayDto dto)
     {
         var workday = await FindWorkdayAsync(id);
 
@@ -193,12 +194,8 @@ public class WorkdayService
         return workday;
     }
 
-    private static DateTime NormalizeWorkdayDate(DateTime? value)
+    private static DateOnly NormalizeWorkdayDate(DateOnly? value)
     {
-        var workdayDate = (value ?? DateTime.UtcNow).Date;
-
-        return workdayDate.Kind == DateTimeKind.Utc
-            ? workdayDate
-            : DateTime.SpecifyKind(workdayDate, DateTimeKind.Utc);
+        return value ?? DateOnly.FromDateTime(DateTime.UtcNow);
     }
 }

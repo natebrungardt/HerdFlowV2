@@ -5,7 +5,7 @@ if (!API_BASE_URL) {
 }
 
 export type Note = {
-  id: number;
+  id: string;
   content: string;
   createdAt: string;
   updatedAt: string;
@@ -62,7 +62,7 @@ async function parseError(response: Response): Promise<ApiError> {
   }
 }
 
-export async function getNotes(cowId: number): Promise<Note[]> {
+export async function getNotes(cowId: string): Promise<Note[]> {
   const response = await fetch(`${API_BASE_URL}/${cowId}/notes`);
 
   if (!response.ok) {
@@ -73,7 +73,7 @@ export async function getNotes(cowId: number): Promise<Note[]> {
 }
 
 export async function createNote(
-  cowId: number,
+  cowId: string,
   content: string,
 ): Promise<Note> {
   const response = await fetch(`${API_BASE_URL}/${cowId}/notes`, {
@@ -91,7 +91,7 @@ export async function createNote(
   return response.json();
 }
 
-export async function deleteNote(cowId: number, noteId: number): Promise<void> {
+export async function deleteNote(cowId: string, noteId: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/${cowId}/notes/${noteId}`, {
     method: "DELETE",
   });
@@ -102,8 +102,8 @@ export async function deleteNote(cowId: number, noteId: number): Promise<void> {
 }
 
 export async function updateNote(
-  cowId: number,
-  noteId: number,
+  cowId: string,
+  noteId: string,
   content: string,
 ): Promise<Note> {
   const response = await fetch(`${API_BASE_URL}/${cowId}/notes/${noteId}`, {

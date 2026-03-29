@@ -13,7 +13,7 @@ public class ActivityLogService
         _context = context;
     }
 
-    public async Task LogAsync(int cowId, string description)
+    public async Task LogAsync(Guid cowId, string description)
     {
         var entry = new ActivityLogEntry
         {
@@ -25,7 +25,7 @@ public class ActivityLogService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<ActivityLogEntry>> GetByCowIdAsync(int cowId)
+    public async Task<List<ActivityLogEntry>> GetByCowIdAsync(Guid cowId)
     {
         return await _context.ActivityLogEntries
             .Where(a => a.CowId == cowId)

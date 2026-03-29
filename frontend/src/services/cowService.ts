@@ -119,7 +119,7 @@ export async function createCow(cowData: CreateCowInput): Promise<Cow> {
   return response.json();
 }
 
-export async function getCowById(id: number): Promise<Cow> {
+export async function getCowById(id: string): Promise<Cow> {
   const response = await fetch(`${API_BASE_URL}/${id}`);
 
   if (!response.ok) {
@@ -130,7 +130,7 @@ export async function getCowById(id: number): Promise<Cow> {
   return response.json();
 }
 
-export async function archiveCow(id: number): Promise<void> {
+export async function archiveCow(id: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/${id}/archive`, {
     method: "PUT",
   });
@@ -141,7 +141,7 @@ export async function archiveCow(id: number): Promise<void> {
   }
 }
 
-export async function deleteCow(id: number): Promise<void> {
+export async function deleteCow(id: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "DELETE",
   });
@@ -162,7 +162,7 @@ export async function getRemovedCows(): Promise<Cow[]> {
   return response.json();
 }
 
-export async function restoreCow(id: number): Promise<void> {
+export async function restoreCow(id: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/${id}/restore`, {
     method: "PUT",
   });
@@ -174,7 +174,7 @@ export async function restoreCow(id: number): Promise<void> {
 }
 
 export async function updateCow(
-  id: number,
+  id: string,
   cowData: CreateCowInput,
 ): Promise<Cow> {
   const response = await fetch(`${API_BASE_URL}/${id}`, {

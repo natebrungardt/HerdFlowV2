@@ -52,7 +52,7 @@ function WorkdayPage() {
   const [date, setDate] = useState("");
   const [summary, setSummary] = useState("");
   const [allCows, setAllCows] = useState<Cow[]>([]);
-  const [selectedCowIds, setSelectedCowIds] = useState<number[]>([]);
+  const [selectedCowIds, setSelectedCowIds] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeHealthStatuses, setActiveHealthStatuses] = useState<string[]>(
     [],
@@ -97,7 +97,7 @@ function WorkdayPage() {
       try {
         setError("");
         const [workdayData, cowsData] = await Promise.all([
-          getWorkdayById(Number(id)),
+          getWorkdayById(id),
           getCows(),
         ]);
 
@@ -197,7 +197,7 @@ function WorkdayPage() {
     );
   }
 
-  function toggleCow(cowId: number) {
+  function toggleCow(cowId: string) {
     setSelectedCowIds((current) =>
       current.includes(cowId)
         ? current.filter((idValue) => idValue !== cowId)
@@ -205,12 +205,12 @@ function WorkdayPage() {
     );
   }
 
-  function promptSelectedCowRemoval(cowId: number) {
+  function promptSelectedCowRemoval(cowId: string) {
     const cowToRemove = selectedCows.find((cow) => cow.id === cowId) ?? null;
     setPendingCowRemoval(cowToRemove);
   }
 
-  function promptAssignedCowRemoval(cowId: number) {
+  function promptAssignedCowRemoval(cowId: string) {
     const cowToRemove = assignedCows.find((cow) => cow.id === cowId) ?? null;
     setPendingAssignedCowRemoval(cowToRemove);
   }
@@ -227,7 +227,7 @@ function WorkdayPage() {
 
   async function refreshWorkday() {
     if (!id) return;
-    const data = await getWorkdayById(Number(id));
+    const data = await getWorkdayById(id);
     setWorkday(data);
     setTitle(data.title);
     setDate(formatDateInput(data.date));
@@ -316,7 +316,7 @@ function WorkdayPage() {
     }
   }
 
-  async function handleRemoveCow(cowId: number) {
+  async function handleRemoveCow(cowId: string) {
     if (!workday) return;
 
     setError("");

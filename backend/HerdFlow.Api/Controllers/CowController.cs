@@ -25,15 +25,15 @@ public class CowController : ControllerBase
         return Ok(cows);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetCow(int id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetCow(Guid id)
     {
         var cow = await _cowService.GetCowByIdAsync(id);
         return Ok(cow);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateCow(int id, [FromBody] CreateCowDto dto)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateCow(Guid id, [FromBody] CreateCowDto dto)
     {
         var updatedCow = await _cowService.UpdateCowAsync(id, dto);
         return Ok(updatedCow);
@@ -46,15 +46,15 @@ public class CowController : ControllerBase
         return Ok(cow);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCow(int id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteCow(Guid id)
     {
         await _cowService.ArchiveCowAsync(id);
         return NoContent();
     }
 
-    [HttpPut("{id}/archive")]
-    public async Task<IActionResult> ArchiveCow(int id)
+    [HttpPut("{id:guid}/archive")]
+    public async Task<IActionResult> ArchiveCow(Guid id)
     {
         await _cowService.ArchiveCowAsync(id);
         return NoContent();
@@ -67,15 +67,15 @@ public class CowController : ControllerBase
         return Ok(cows);
     }
 
-    [HttpPut("{id}/restore")]
-    public async Task<IActionResult> RestoreCow(int id)
+    [HttpPut("{id:guid}/restore")]
+    public async Task<IActionResult> RestoreCow(Guid id)
     {
         await _cowService.RestoreCowAsync(id);
         return Ok();
     }
 
-    [HttpGet("{id}/activities")]
-    public async Task<IActionResult> GetActivities(int id)
+    [HttpGet("{id:guid}/activities")]
+    public async Task<IActionResult> GetActivities(Guid id)
     {
         var activities = await _activityLogService.GetByCowIdAsync(id);
         return Ok(activities);
