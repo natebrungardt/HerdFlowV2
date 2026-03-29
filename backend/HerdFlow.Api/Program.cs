@@ -60,7 +60,10 @@ if (app.Environment.IsDevelopment())
    });
 }
 
-app.UseHttpsRedirection();
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.MapControllers();
+app.Urls.Add("http://0.0.0.0:8080");
 app.Run();
