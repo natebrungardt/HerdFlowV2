@@ -9,6 +9,7 @@ import AllWorkdayPage from "./pages/workdays/AllWorkdayPage";
 import AddWorkdayPage from "./pages/workdays/AddWorkdayPage";
 import WorkdayPage from "./pages/workdays/WorkdayPage";
 import RemovedWorkdays from "./pages/workdays/RemovedWorkdays";
+import Finances from "./pages/Finances";
 import { PendingWorkdaySelectionProvider } from "./context/PendingWorkdaySelectionContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="/workdays/new" element={<AddWorkdayPage />} />
             <Route path="/workdays/:id" element={<WorkdayPage />} />
             <Route path="/workdays/removed" element={<RemovedWorkdays />} />
+            <Route path="/finances" element={<Finances />} />
           </Routes>
         </PendingWorkdaySelectionProvider>
       </BrowserRouter>

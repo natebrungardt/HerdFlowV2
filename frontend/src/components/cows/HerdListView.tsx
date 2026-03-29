@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Cow } from "../../types/cow";
-import { herdFilterOptions } from "../../constants/cowFormOptions";
 
 type HerdListViewProps = {
   cows: Cow[];
@@ -15,6 +14,16 @@ type HerdListViewProps = {
   emptyMessage?: string;
   sectionTitle?: string;
 };
+
+type HerdStatFilter =
+  | "All"
+  | "Healthy"
+  | "Needs Treatment"
+  | "Breeding"
+  | "Feeder"
+  | "Market";
+
+type HerdStatLabel = "Total Cows" | HerdStatFilter;
 
 function formatHealthStatus(status: string | null | undefined) {
   return (status ?? "Unknown").replace(/([A-Z])/g, " $1").trim();
@@ -47,13 +56,11 @@ function HerdListView({
   sectionTitle = "Herd Records",
 }: HerdListViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("All");
+  const [selectedFilter, setSelectedFilter] = useState<HerdStatFilter>("All");
 
   const filteredCows = useMemo(() => {
     const matchingCows = cows.filter((cow) => {
       const normalizedSearch = normalizeSearchValue(searchTerm);
-      const normalizedGroup = (cow.livestockGroup ?? "").trim().toLowerCase();
-      const normalizedSelectedGroup = selectedGroup.trim().toLowerCase();
       const normalizedTagNumber = normalizeSearchValue(cow.tagNumber);
       const normalizedOwnerName = normalizeSearchValue(cow.ownerName ?? "");
 
@@ -61,18 +68,16 @@ function HerdListView({
         normalizedTagNumber.includes(normalizedSearch) ||
         normalizedOwnerName.includes(normalizedSearch);
 
-      let matchesGroup = false;
+      const matchesFilter =
+        selectedFilter === "All"
+          ? true
+          : selectedFilter === "Healthy"
+            ? cow.healthStatus === "Healthy"
+            : selectedFilter === "Needs Treatment"
+              ? cow.healthStatus !== "Healthy"
+              : cow.livestockGroup === selectedFilter;
 
-      if (normalizedSelectedGroup === "all") {
-        matchesGroup = true;
-      } else if (normalizedSelectedGroup === "needs treatment") {
-        matchesGroup =
-          (cow.healthStatus ?? "").trim().toLowerCase() !== "healthy";
-      } else {
-        matchesGroup = normalizedGroup === normalizedSelectedGroup;
-      }
-
-      return matchesSearch && matchesGroup;
+      return matchesSearch && matchesFilter;
     });
 
     return [...matchingCows].sort((leftCow, rightCow) => {
@@ -100,29 +105,29 @@ function HerdListView({
         sensitivity: "base",
       });
     });
-  }, [cows, searchTerm, selectedGroup]);
+  }, [cows, searchTerm, selectedFilter]);
 
   const stats = useMemo(
     () => [
-      { label: "Total Cows", value: cows.length },
+      { label: "Total Cows" as HerdStatLabel, value: cows.length },
       {
-        label: "Healthy",
+        label: "Healthy" as HerdStatLabel,
         value: cows.filter((cow) => cow.healthStatus === "Healthy").length,
       },
       {
-        label: "Needs Treatment",
+        label: "Needs Treatment" as HerdStatLabel,
         value: cows.filter((cow) => cow.healthStatus !== "Healthy").length,
       },
       {
-        label: "Breeding",
+        label: "Breeding" as HerdStatLabel,
         value: cows.filter((cow) => cow.livestockGroup === "Breeding").length,
       },
       {
-        label: "Feeder",
+        label: "Feeder" as HerdStatLabel,
         value: cows.filter((cow) => cow.livestockGroup === "Feeder").length,
       },
       {
-        label: "Market",
+        label: "Market" as HerdStatLabel,
         value: cows.filter((cow) => cow.livestockGroup === "Market").length,
       },
     ],
@@ -154,26 +159,28 @@ function HerdListView({
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
-
-            <div className="filterRow">
-              {herdFilterOptions.map((group) => (
-                <button
-                  key={group}
-                  className={`filterChip ${selectedGroup === group ? "active" : ""}`.trim()}
-                  onClick={() => setSelectedGroup(group)}
-                >
-                  {group}
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="statsGrid">
             {stats.map((stat) => (
-              <div key={stat.label} className="statsCard">
+              <button
+                key={stat.label}
+                type="button"
+                className={`statsCard statsFilterButton ${
+                  selectedFilter === stat.label ||
+                  (stat.label === "Total Cows" && selectedFilter === "All")
+                    ? "active"
+                    : ""
+                }`.trim()}
+                onClick={() =>
+                  setSelectedFilter(
+                    stat.label === "Total Cows" ? "All" : stat.label,
+                  )
+                }
+              >
                 <div className="statLabel">{stat.label}</div>
                 <div className="statValue">{stat.value}</div>
-              </div>
+              </button>
             ))}
           </div>
 
