@@ -1,9 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
+# Copy csproj first and restore
+COPY HerdFlow.Api/HerdFlow.Api.csproj ./HerdFlow.Api/
+RUN dotnet restore ./HerdFlow.Api/HerdFlow.Api.csproj
+
+# Copy everything else
 COPY . ./
-RUN dotnet restore
-RUN dotnet publish -c Release -o out
+
+# Move into project directory and publish
+WORKDIR /app/HerdFlow.Api
+RUN dotnet publish -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
