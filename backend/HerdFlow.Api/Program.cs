@@ -54,12 +54,15 @@ app.UseCors("AllowFrontend");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Swagger (enabled in all environments)
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+// Swagger (only in development)
+if (app.Environment.IsDevelopment())
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "HerdFlow API v1");
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "HerdFlow API v1");
+    });
+}
 
 // Only redirect HTTPS locally (Render handles TLS)
 if (app.Environment.IsDevelopment())
