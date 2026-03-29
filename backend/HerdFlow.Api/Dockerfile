@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
 # Copy csproj first and restore
-COPY HerdFlow.Api/HerdFlow.Api.csproj ./HerdFlow.Api/
-RUN dotnet restore ./HerdFlow.Api/HerdFlow.Api.csproj
+COPY HerdFlow.Api/HerdFlow.Api.csproj HerdFlow.Api/
+RUN dotnet restore HerdFlow.Api/HerdFlow.Api.csproj
 
 # Copy everything else
 COPY . ./
