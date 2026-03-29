@@ -21,8 +21,17 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Convert enums to string so they match text columns in Postgres
         modelBuilder.Entity<Cow>()
             .Property(c => c.HealthStatus)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Cow>()
+            .Property(c => c.LivestockGroup)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Cow>()
+            .Property(c => c.HeatStatus)
             .HasConversion<string>();
 
         base.OnModelCreating(modelBuilder);
