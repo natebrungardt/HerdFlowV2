@@ -17,7 +17,7 @@ function Navbar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = "/auth";
+    window.location.href = "/";
   };
 
   function isActivePath(targetPath: string) {
@@ -121,10 +121,14 @@ function Navbar() {
           >
             Finances
           </Link>
-          <span style={{ marginLeft: "1rem" }}>{user?.email}</span>
-          <button onClick={handleLogout} style={{ marginLeft: "0.5rem" }}>
-            Logout
-          </button>
+          {user && (
+            <>
+              <span style={{ marginLeft: "1rem" }}>{user.email}</span>
+              <button onClick={handleLogout} style={{ marginLeft: "0.5rem" }}>
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
       <Modal
