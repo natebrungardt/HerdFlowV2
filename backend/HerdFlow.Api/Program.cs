@@ -49,6 +49,8 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors("AllowFrontend");
 
+app.UseRouting();
+
 // Enable Swagger in all environments (including production on Render)
 app.UseSwagger();
 app.UseSwaggerUI(options =>
