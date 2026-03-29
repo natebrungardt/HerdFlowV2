@@ -44,23 +44,27 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseCors("AllowFrontend");
-
+// Order matters
 app.UseRouting();
 
-// Enable Swagger in all environments (including production on Render)
+app.UseCors("AllowFrontend");
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Swagger (enabled in all environments)
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "HerdFlow API v1");
 });
 
-// Keep HTTPS redirection only for local/dev (Render terminates TLS upstream)
+// Only redirect HTTPS locally (Render handles TLS)
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+// Map controllers LAST
 app.MapControllers();
-app.Urls.Add("http://0.0.0.0:8080");
+
 app.Run();
