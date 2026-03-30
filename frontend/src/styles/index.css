@@ -326,6 +326,11 @@ img {
   pointer-events: none;
 }
 
+.authShellSingle {
+  max-width: 620px;
+  grid-template-columns: 1fr;
+}
+
 .authBrandPanel {
   padding: 56px;
   background:
@@ -443,6 +448,10 @@ img {
     rgba(255, 255, 255, 0.02) 0%,
     rgba(255, 255, 255, 0.01) 100%
   );
+}
+
+.authFormPanelCentered {
+  min-height: 680px;
 }
 
 .authFormCard {
@@ -575,6 +584,30 @@ img {
 
 .authActions {
   display: grid;
+}
+
+.authAuxiliaryActions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.authTextButton {
+  width: fit-content;
+  padding: 0;
+  color: var(--color-accent);
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.authTextButton:hover {
+  color: var(--text-primary);
+}
+
+.authTextButtonInline {
+  margin-top: -4px;
 }
 
 .authPrimaryButton {

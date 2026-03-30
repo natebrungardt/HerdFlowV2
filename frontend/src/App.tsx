@@ -13,6 +13,7 @@ import Finances from "./pages/Finances";
 import { PendingWorkdaySelectionProvider } from "./context/PendingWorkdaySelectionContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import AuthPage from "./pages/AuthPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 
@@ -30,6 +31,7 @@ function App() {
       <ThemeProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="*" element={<AuthPage />} />
           </Routes>
         </BrowserRouter>
@@ -44,6 +46,7 @@ function App() {
         <PendingWorkdaySelectionProvider>
           <Navbar />
           <Routes>
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/" element={<Dashboard />} />
             <Route path="/cows" element={<AllCowPage />} />
             <Route path="/cows/:id" element={<CowDetailPage />} />

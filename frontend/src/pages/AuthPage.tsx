@@ -4,19 +4,27 @@ import { supabase } from "../lib/supabase";
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"error" | "success" | null>(
     null,
   );
 
+  const normalizedEmail = email.trim().toLowerCase();
+
   const handleSignUp = async () => {
     setIsSubmitting(true);
     setMessage(null);
     setMessageType(null);
 
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+      },
+    });
 
     if (error) {
       setMessage(error.message);
@@ -25,9 +33,10 @@ export default function AuthPage() {
       return;
     }
 
-    setMessage("Account created. You can continue into HerdFlow.");
+    setMessage("Account created. Check your email to confirm your account before signing in.");
     setMessageType("success");
-    window.location.href = "/";
+    setPassword("");
+    setIsSubmitting(false);
   };
 
   const handleLogin = async () => {
@@ -36,7 +45,7 @@ export default function AuthPage() {
     setMessageType(null);
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalizedEmail,
       password,
     });
 
@@ -48,6 +57,30 @@ export default function AuthPage() {
     }
 
     window.location.href = "/";
+  };
+
+  const handleForgotPassword = async () => {
+    setIsSubmitting(true);
+    setMessage(null);
+    setMessageType(null);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      normalizedEmail,
+      {
+        redirectTo: `${window.location.origin}/reset-password`,
+      },
+    );
+
+    if (error) {
+      setMessage(error.message);
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    setMessage("Password reset email sent. Check your inbox for the reset link.");
+    setMessageType("success");
+    setIsSubmitting(false);
   };
 
   return (
@@ -103,20 +136,15 @@ export default function AuthPage() {
               <p className="authFormKicker">Welcome back</p>
               <h2 className="authFormTitle">Access your ranch dashboard</h2>
               <p className="authFormCopy">
-                Sign in to continue, or create an account to start managing your
-                operation in HerdFlow.
+                {mode === "forgot"
+                  ? "Enter your email and we will send you a password reset link."
+                  : "Sign in to continue, or create an account to start managing your operation in HerdFlow."}
               </p>
             </div>
 
-            <div
-              className="authModeSwitch"
-              role="tablist"
-              aria-label="Auth mode"
-            >
+            {mode === "forgot" ? (
               <button
-                className={
-                  mode === "login" ? "authModeButton active" : "authModeButton"
-                }
+                className="authTextButton authTextButtonInline"
                 onClick={() => {
                   setMode("login");
                   setMessage(null);
@@ -124,22 +152,42 @@ export default function AuthPage() {
                 }}
                 type="button"
               >
-                Log In
+                Back to sign in
               </button>
-              <button
-                className={
-                  mode === "signup" ? "authModeButton active" : "authModeButton"
-                }
-                onClick={() => {
-                  setMode("signup");
-                  setMessage(null);
-                  setMessageType(null);
-                }}
-                type="button"
+            ) : (
+              <div
+                className="authModeSwitch"
+                role="tablist"
+                aria-label="Auth mode"
               >
-                Sign Up
-              </button>
-            </div>
+                <button
+                  className={
+                    mode === "login" ? "authModeButton active" : "authModeButton"
+                  }
+                  onClick={() => {
+                    setMode("login");
+                    setMessage(null);
+                    setMessageType(null);
+                  }}
+                  type="button"
+                >
+                  Log In
+                </button>
+                <button
+                  className={
+                    mode === "signup" ? "authModeButton active" : "authModeButton"
+                  }
+                  onClick={() => {
+                    setMode("signup");
+                    setMessage(null);
+                    setMessageType(null);
+                  }}
+                  type="button"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
 
             <div className="authFormFields">
               <label className="authField">
@@ -154,19 +202,21 @@ export default function AuthPage() {
                 />
               </label>
 
-              <label className="authField">
-                <span>Password</span>
-                <input
-                  className="authInput"
-                  placeholder="Enter your password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={
-                    mode === "login" ? "current-password" : "new-password"
-                  }
-                />
-              </label>
+              {mode !== "forgot" ? (
+                <label className="authField">
+                  <span>Password</span>
+                  <input
+                    className="authInput"
+                    placeholder="Enter your password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={
+                      mode === "login" ? "current-password" : "new-password"
+                    }
+                  />
+                </label>
+              ) : null}
             </div>
 
             {message ? (
@@ -191,6 +241,15 @@ export default function AuthPage() {
                 >
                   {isSubmitting ? "Signing in..." : "Log In"}
                 </button>
+              ) : mode === "forgot" ? (
+                <button
+                  className="authPrimaryButton"
+                  onClick={handleForgotPassword}
+                  disabled={isSubmitting || normalizedEmail.length === 0}
+                  type="button"
+                >
+                  {isSubmitting ? "Sending reset email..." : "Send Reset Link"}
+                </button>
               ) : (
                 <button
                   className="authPrimaryButton"
@@ -202,6 +261,23 @@ export default function AuthPage() {
                 </button>
               )}
             </div>
+
+            {mode === "login" ? (
+              <div className="authAuxiliaryActions">
+                <button
+                  className="authTextButton"
+                  onClick={() => {
+                    setMode("forgot");
+                    setPassword("");
+                    setMessage(null);
+                    setMessageType(null);
+                  }}
+                  type="button"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            ) : null}
 
             <p className="authFormFootnote">
               Built for herd records, workday planning, and daily ranch follow
