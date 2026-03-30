@@ -2,6 +2,8 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
 export default function AuthPage() {
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
@@ -13,15 +15,67 @@ export default function AuthPage() {
 
   const normalizedEmail = email.trim().toLowerCase();
 
+  const isEmailLike = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+  const isPhoneLike = /^[0-9()\-\s]+$/.test(phoneNumber.trim());
+
   const handleSignUp = async () => {
     setIsSubmitting(true);
     setMessage(null);
     setMessageType(null);
 
+    const normalizedName = fullName.trim();
+    const normalizedPhone = phoneNumber.trim();
+
+    if (!normalizedEmail) {
+      setMessage("Email is required.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!isEmailLike) {
+      setMessage("Enter a valid email address.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!password.trim()) {
+      setMessage("Password is required.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!normalizedName) {
+      setMessage("Name is required.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!normalizedPhone) {
+      setMessage("Phone number is required.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!isPhoneLike) {
+      setMessage("Phone number can only include digits, spaces, dashes, and parentheses.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
       options: {
+        data: {
+          full_name: normalizedName,
+          phone: normalizedPhone,
+        },
         emailRedirectTo: `${window.location.origin}/`,
       },
     });
@@ -44,6 +98,20 @@ export default function AuthPage() {
     setMessage(null);
     setMessageType(null);
 
+    if (!normalizedEmail) {
+      setMessage("Email is required.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!isEmailLike) {
+      setMessage("Enter a valid email address.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,
       password,
@@ -63,6 +131,20 @@ export default function AuthPage() {
     setIsSubmitting(true);
     setMessage(null);
     setMessageType(null);
+
+    if (!normalizedEmail) {
+      setMessage("Email is required.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!isEmailLike) {
+      setMessage("Enter a valid email address.");
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
 
     const { error } = await supabase.auth.resetPasswordForEmail(
       normalizedEmail,
@@ -201,6 +283,34 @@ export default function AuthPage() {
                   autoComplete="email"
                 />
               </label>
+
+              {mode === "signup" ? (
+                <label className="authField">
+                  <span>Name</span>
+                  <input
+                    className="authInput"
+                    placeholder="Your name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    type="text"
+                    autoComplete="name"
+                  />
+                </label>
+              ) : null}
+
+              {mode === "signup" ? (
+                <label className="authField">
+                  <span>Phone Number</span>
+                  <input
+                    className="authInput"
+                    placeholder="(555) 555-5555"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    type="tel"
+                    autoComplete="tel"
+                  />
+                </label>
+              ) : null}
 
               {mode !== "forgot" ? (
                 <label className="authField">

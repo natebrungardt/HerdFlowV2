@@ -257,27 +257,23 @@ img {
 }
 
 .navbarAccount {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
   margin-left: 8px;
 }
 
-.navbarUserEmail {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.navbarLogoutButton {
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid var(--danger-border-subtle);
-  background: var(--danger-bg-subtle);
-  color: var(--danger-text-soft);
-  font-size: 0.9rem;
-  font-weight: 700;
+.navbarAccountButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
@@ -285,8 +281,113 @@ img {
     color 0.2s ease;
 }
 
-.navbarLogoutButton:hover {
+.navbarAccountButton:hover {
   transform: translateY(-1px);
+  border-color: var(--input-focus);
+  background: var(--surface-subtle-hover);
+}
+
+.navbarAvatar {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 100%),
+    var(--color-primary);
+  color: #f8fbf8;
+  font-size: 0.82rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.navbarAccountCopy {
+  display: grid;
+  gap: 1px;
+  text-align: left;
+}
+
+.navbarAccountName {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.navbarUserEmail {
+  color: var(--text-muted-strong);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.navbarAccountChevron {
+  color: var(--text-muted-strong);
+  font-size: 0.64rem;
+  flex-shrink: 0;
+}
+
+.navbarAccountMenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 200px;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  background: var(--shell-bg);
+  box-shadow: var(--shell-shadow);
+  z-index: 40;
+}
+
+.navbarAccountMenuHeader {
+  display: grid;
+  gap: 2px;
+  padding: 4px 6px 8px;
+}
+
+.navbarAccountMenuName {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.navbarAccountMenuEmail {
+  color: var(--text-muted-strong);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.navbarMenuItem {
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-align: left;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.navbarMenuItem:hover {
+  transform: translateY(-1px);
+  background: var(--surface-subtle-hover);
+  color: var(--text-primary);
+}
+
+.navbarMenuItemDanger {
+  border: 1px solid var(--danger-border-subtle);
+  background: var(--danger-bg-subtle);
+  color: var(--danger-text-soft);
+}
+
+.navbarMenuItemDanger:hover {
   border-color: rgba(199, 70, 82, 0.36);
   background: rgba(199, 70, 82, 0.16);
   color: var(--text-primary);
@@ -667,28 +768,6 @@ img {
   }
 }
 
-.themeToggleButton {
-  border: 1px solid var(--card-border);
-  background: var(--surface-subtle);
-  color: var(--text-secondary);
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.themeToggleButton:hover {
-  background: var(--surface-subtle-hover);
-  border-color: var(--input-focus);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
 .navbar-links a {
   color: var(--color-text-muted);
   font-size: 0.95rem;
@@ -763,5 +842,16 @@ img {
 
   .navbarAccount {
     margin-left: 0;
+  }
+
+  .navbarAccountButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .navbarAccountMenu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 }
