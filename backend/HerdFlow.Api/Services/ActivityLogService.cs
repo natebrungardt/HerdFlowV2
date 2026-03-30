@@ -2,6 +2,7 @@ using HerdFlow.Api.Data;
 using HerdFlow.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Security.Claims;
 
 namespace HerdFlow.Api.Services;
@@ -27,7 +28,21 @@ public class ActivityLogService
         };
 
         _context.ActivityLogEntries.Add(entry);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (WasDuplicatePrimaryKeyInsert(ex))
+        {
+            var existingEntry = await _context.ActivityLogEntries.FirstOrDefaultAsync(a => a.Id == entry.Id);
+
+            if (existingEntry is not null)
+            {
+                return;
+            }
+
+            throw;
+        }
     }
 
     public async Task<List<ActivityLogEntry>> GetByCowIdAsync(Guid cowId)
@@ -50,5 +65,12 @@ public class ActivityLogService
         }
 
         return userId;
+    }
+
+    private static bool WasDuplicatePrimaryKeyInsert(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation
+            && postgresException.ConstraintName == "PK_ActivityLogEntries";
     }
 }

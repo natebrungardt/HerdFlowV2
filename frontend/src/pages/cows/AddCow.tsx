@@ -11,7 +11,7 @@ import {
   pregnancyStatusOptions,
   sexOptions,
 } from "../../constants/cowFormOptions";
-import { createCow } from "../../services/cowService";
+import { createCow, getCows } from "../../services/cowService";
 import "../../styles/CowDetailPage.css";
 
 type FormState = {
@@ -66,6 +66,12 @@ function formatCurrencyPreview(value: string) {
   }).format(numericValue);
 }
 
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
 function AddCowPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormState>(initialFormState);
@@ -92,15 +98,45 @@ function AddCowPage() {
     setError("");
     setSaving(true);
 
-    if (!TAG_NUMBER_PATTERN.test(formData.tagNumber.trim())) {
+    const normalizedTagNumber = formData.tagNumber.trim();
+
+    if (!TAG_NUMBER_PATTERN.test(normalizedTagNumber)) {
       setError("Tag number can only include letters, numbers, and dashes.");
       setSaving(false);
       return;
     }
 
+    let stopped = false;
+    let completed = false;
+
+    const monitorCreatedCow = async () => {
+      for (let attempt = 0; attempt < 6; attempt += 1) {
+        await delay(attempt === 0 ? 4000 : 2500);
+
+        if (stopped || completed) {
+          return;
+        }
+
+        const cows = await getCows();
+        const wasCreated = cows.some(
+          (cow: { tagNumber: string }) => cow.tagNumber === normalizedTagNumber,
+        );
+
+        if (wasCreated) {
+          completed = true;
+          navigate("/cows");
+          return;
+        }
+      }
+    };
+
+    const monitorPromise = monitorCreatedCow().catch(() => {
+      // Ignore polling errors and let the main save result drive the fallback message.
+    });
+
     try {
       await createCow({
-        tagNumber: formData.tagNumber,
+        tagNumber: normalizedTagNumber,
         ownerName: formData.ownerName,
         breed: formData.breed,
         sex: formData.sex,
@@ -119,15 +155,26 @@ function AddCowPage() {
         notes: formData.notes || null,
       });
 
-      navigate("/cows");
+      if (!completed) {
+        completed = true;
+        navigate("/cows");
+      }
     } catch (err) {
+      if (completed) {
+        return;
+      }
+
       const message =
         err instanceof Error ? err.message : "Failed to create cow";
       setError(message);
       setSaving(false);
+      stopped = true;
+      await monitorPromise;
       return;
     }
 
+    stopped = true;
+    await monitorPromise;
     setSaving(false);
   }
 

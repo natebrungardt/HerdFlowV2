@@ -4,6 +4,7 @@ using HerdFlow.Api.Exceptions;
 using HerdFlow.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Npgsql;
 using System.Security.Claims;
 
 namespace HerdFlow.Api.Services;
@@ -43,7 +44,21 @@ public class NoteService
         };
 
         _context.Notes.Add(note);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (WasDuplicatePrimaryKeyInsert(ex))
+        {
+            var existingNote = await _context.Notes.FirstOrDefaultAsync(n => n.Id == note.Id);
+
+            if (existingNote is not null)
+            {
+                return existingNote;
+            }
+
+            throw;
+        }
 
         return note;
     }
@@ -106,5 +121,12 @@ public class NoteService
         }
 
         return userId;
+    }
+
+    private static bool WasDuplicatePrimaryKeyInsert(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation
+            && postgresException.ConstraintName == "PK_Notes";
     }
 }

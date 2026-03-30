@@ -13,10 +13,17 @@ import {
 import { getCows } from "../../services/cowService";
 import {
   createWorkday,
+  getActiveWorkdays,
   type CreateWorkdayInput,
 } from "../../services/workdayService";
 import type { Cow } from "../../types/cow";
 import "../../styles/AllCows.css";
+
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
 
 function AddWorkdayPage() {
   const navigate = useNavigate();
@@ -171,24 +178,70 @@ function AddWorkdayPage() {
     setSaving(true);
     setSaveError("");
 
+    const normalizedTitle = title.trim();
+    const normalizedSummary = summary.trim();
     const payload: CreateWorkdayInput = {
-      title,
+      title: normalizedTitle,
       date: date || null,
-      summary: summary.trim() ? summary : null,
+      summary: normalizedSummary ? normalizedSummary : null,
       cowIds: selectedCowIds,
     };
 
+    let stopped = false;
+    let completed = false;
+
+    const monitorCreatedWorkday = async () => {
+      for (let attempt = 0; attempt < 6; attempt += 1) {
+        await delay(attempt === 0 ? 4000 : 2500);
+
+        if (stopped || completed) {
+          return;
+        }
+
+        const workdays = await getActiveWorkdays();
+        const wasCreated = workdays.some((workday) => {
+          const sameTitle = workday.title.trim() === normalizedTitle;
+          const sameDate = date === "" || workday.date.startsWith(date);
+          const sameSummary = (workday.summary ?? "").trim() === normalizedSummary;
+
+          return sameTitle && sameDate && sameSummary;
+        });
+
+        if (wasCreated) {
+          completed = true;
+          navigate("/workdays");
+          return;
+        }
+      }
+    };
+
+    const monitorPromise = monitorCreatedWorkday().catch(() => {
+      // Ignore polling errors and let the main save result drive the fallback message.
+    });
+
     try {
       await createWorkday(payload);
-      navigate("/workdays");
+
+      if (!completed) {
+        completed = true;
+        navigate("/workdays");
+      }
     } catch (err) {
+      if (completed) {
+        return;
+      }
+
       const message =
         err instanceof Error ? err.message : "Failed to create workday";
       setSaveError(message);
       setSaving(false);
+      stopped = true;
+      await monitorPromise;
       return;
     }
 
+    stopped = true;
+    await monitorPromise;
     setSaving(false);
   }
 

@@ -4,6 +4,7 @@ using HerdFlow.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using HerdFlow.Api.DTOs;
 using Microsoft.AspNetCore.Http;
+using Npgsql;
 using System.Security.Claims;
 
 namespace HerdFlow.Api.Services;
@@ -50,7 +51,25 @@ public class WorkdayService
         };
 
         _context.Workdays.Add(workday);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (WasDuplicatePrimaryKeyInsert(ex))
+        {
+            var existingWorkday = await _context.Workdays
+                .Include(w => w.WorkdayCows)
+                    .ThenInclude(wc => wc.Cow)
+                .Include(w => w.WorkdayNotes)
+                .FirstOrDefaultAsync(w => w.Id == workday.Id);
+
+            if (existingWorkday is not null)
+            {
+                return existingWorkday;
+            }
+
+            throw;
+        }
 
         return workday;
     }
@@ -135,7 +154,24 @@ public class WorkdayService
             });
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (WasDuplicateWorkdayCowInsert(ex))
+        {
+            var refreshedWorkday = await _context.Workdays
+                .Include(w => w.WorkdayCows)
+                .FirstOrDefaultAsync(w => w.Id == id);
+
+            if (refreshedWorkday is not null &&
+                distinctCowIds.All(cowId => refreshedWorkday.WorkdayCows.Any(wc => wc.CowId == cowId)))
+            {
+                return;
+            }
+
+            throw;
+        }
     }
 
     public async Task RemoveCowFromWorkday(Guid id, Guid cowId)
@@ -215,5 +251,19 @@ public class WorkdayService
         }
 
         return userId;
+    }
+
+    private static bool WasDuplicatePrimaryKeyInsert(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation
+            && postgresException.ConstraintName == "PK_Workdays";
+    }
+
+    private static bool WasDuplicateWorkdayCowInsert(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation
+            && postgresException.ConstraintName == "IX_WorkdayCows_WorkdayId_CowId";
     }
 }
