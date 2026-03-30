@@ -412,7 +412,7 @@ function AddCowPage() {
                       </option>
                     ))}
                   </select>
-                  <div className="metricAccent" />
+                  <div />
                 </div>
 
                 <div className="metricCard">
@@ -435,7 +435,7 @@ function AddCowPage() {
                       </option>
                     ))}
                   </select>
-                  <div className="metricAccent" />
+                  <div />
                 </div>
               </div>
             </CowHeroCard>

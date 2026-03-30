@@ -293,6 +293,45 @@
   font: inherit;
 }
 
+select.cardInput,
+select.inlineFieldInput,
+select.metricFieldInput {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 0.72rem 2.6rem 0.72rem 0.95rem;
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  background-color: var(--surface-subtle);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted-soft) 50%),
+    linear-gradient(135deg, var(--text-muted-soft) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  box-shadow: var(--card-shadow);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+select.cardInput:hover,
+select.inlineFieldInput:hover,
+select.metricFieldInput:hover {
+  border-color: var(--row-hover-border);
+  background-color: var(--surface-subtle-hover);
+}
+
+select.cardInput:focus,
+select.inlineFieldInput:focus,
+select.metricFieldInput:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
 .notesPlaceholder {
   width: 100%;
   min-height: 180px;
