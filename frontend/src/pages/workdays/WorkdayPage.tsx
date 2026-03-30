@@ -43,6 +43,12 @@ function normalizeWorkdayDetails(details: {
   };
 }
 
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
 function WorkdayPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -303,15 +309,61 @@ function WorkdayPage() {
     setAddingCows(true);
     setError("");
 
+    const pendingCowIds = [...selectedCowIds];
+    let stopped = false;
+    let completed = false;
+
+    const monitorAssignedCows = async () => {
+      for (let attempt = 0; attempt < 6; attempt += 1) {
+        await delay(attempt === 0 ? 4000 : 2500);
+
+        if (stopped || completed) {
+          return;
+        }
+
+        const refreshedWorkday = await getWorkdayById(workday.id);
+        const assignedCowIds = new Set(
+          (refreshedWorkday.workdayCows ?? []).map(
+            (assignment) => assignment.cowId,
+          ),
+        );
+        const allAssigned = pendingCowIds.every((cowId) =>
+          assignedCowIds.has(cowId),
+        );
+
+        if (allAssigned) {
+          completed = true;
+          setWorkday(refreshedWorkday);
+          setTitle(refreshedWorkday.title);
+          setDate(formatDateInput(refreshedWorkday.date));
+          setSummary(refreshedWorkday.summary ?? "");
+          setSelectedCowIds([]);
+          return;
+        }
+      }
+    };
+
+    const monitorPromise = monitorAssignedCows().catch(() => {
+      // Ignore polling errors and let the main save result drive the fallback message.
+    });
+
     try {
-      await addCowsToWorkday(workday.id, selectedCowIds);
-      setSelectedCowIds([]);
-      await refreshWorkday();
+      await addCowsToWorkday(workday.id, pendingCowIds);
+
+      if (!completed) {
+        setSelectedCowIds([]);
+        await refreshWorkday();
+        completed = true;
+      }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to add cows to workday";
-      setError(message);
+      if (!completed) {
+        const message =
+          err instanceof Error ? err.message : "Failed to add cows to workday";
+        setError(message);
+      }
     } finally {
+      stopped = true;
+      await monitorPromise;
       setAddingCows(false);
     }
   }
@@ -587,8 +639,9 @@ function WorkdayPage() {
         onCancel={() => setPendingAssignedCowRemoval(null)}
         onConfirm={async () => {
           if (!pendingAssignedCowRemoval) return;
-          await handleRemoveCow(pendingAssignedCowRemoval.id);
+          const cowId = pendingAssignedCowRemoval.id;
           setPendingAssignedCowRemoval(null);
+          await handleRemoveCow(cowId);
         }}
       />
     </div>

@@ -181,7 +181,14 @@ public class WorkdayService
 
         if (workdayCow == null)
         {
-            throw new NotFoundException("Cow assignment not found for this workday.");
+            var workdayExists = await _context.Workdays.AnyAsync(w => w.Id == id);
+
+            if (!workdayExists)
+            {
+                throw new NotFoundException("Workday not found.");
+            }
+
+            return;
         }
 
         _context.WorkdayCows.Remove(workdayCow);
