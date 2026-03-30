@@ -122,12 +122,12 @@ function Navbar() {
             Finances
           </Link>
           {user && (
-            <>
-              <span style={{ marginLeft: "1rem" }}>{user.email}</span>
-              <button onClick={handleLogout} style={{ marginLeft: "0.5rem" }}>
+            <div className="navbarAccount">
+              <span className="navbarUserEmail">{user.email}</span>
+              <button className="navbarLogoutButton" onClick={handleLogout}>
                 Logout
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
