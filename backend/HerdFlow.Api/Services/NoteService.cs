@@ -3,16 +3,20 @@ using HerdFlow.Api.DTOs;
 using HerdFlow.Api.Exceptions;
 using HerdFlow.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace HerdFlow.Api.Services;
 
 public class NoteService
 {
     private readonly AppDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public NoteService(AppDbContext context)
+    public NoteService(AppDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<List<Note>> GetNotesAsync(Guid cowId)
@@ -31,7 +35,7 @@ public class NoteService
 
         var note = new Note
         {
-            UserId = string.Empty,
+            UserId = GetCurrentUserId(),
             CowId = cowId,
             Content = dto.Content.Trim(),
             CreatedAt = now,
@@ -88,5 +92,19 @@ public class NoteService
         {
             throw new ValidationException("Note content is required.");
         }
+    }
+
+    private string GetCurrentUserId()
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? user?.FindFirstValue("sub");
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new InvalidOperationException("Authenticated user ID is missing.");
+        }
+
+        return userId;
     }
 }

@@ -3,16 +3,20 @@ using HerdFlow.Api.Exceptions;
 using HerdFlow.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using HerdFlow.Api.DTOs;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace HerdFlow.Api.Services;
 
 public class WorkdayService
 {
     private readonly AppDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public WorkdayService(AppDbContext context)
+    public WorkdayService(AppDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     // CREATE
@@ -35,7 +39,7 @@ public class WorkdayService
 
         var workday = new Workday
         {
-            UserId = string.Empty,
+            UserId = GetCurrentUserId(),
             Title = dto.Title.Trim(),
             Date = NormalizeWorkdayDate(dto.Date),
             Summary = dto.Summary,
@@ -197,5 +201,19 @@ public class WorkdayService
     private static DateOnly NormalizeWorkdayDate(DateOnly? value)
     {
         return value ?? DateOnly.FromDateTime(DateTime.UtcNow);
+    }
+
+    private string GetCurrentUserId()
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? user?.FindFirstValue("sub");
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new InvalidOperationException("Authenticated user ID is missing.");
+        }
+
+        return userId;
     }
 }

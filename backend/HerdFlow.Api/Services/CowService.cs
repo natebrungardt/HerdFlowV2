@@ -5,6 +5,8 @@ using HerdFlow.Api.Exceptions;
 using HerdFlow.Api.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace HerdFlow.Api.Services;
 
@@ -14,15 +16,18 @@ public class CowService
     private readonly AppDbContext _context;
     private readonly ActivityLogService _activityLogService;
     private readonly CowChangeLogService _cowChangeLogService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CowService(
         AppDbContext context,
         ActivityLogService activityLogService,
-        CowChangeLogService cowChangeLogService)
+        CowChangeLogService cowChangeLogService,
+        IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
         _activityLogService = activityLogService;
         _cowChangeLogService = cowChangeLogService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     private void ValidateCreateCow(CreateCowDto dto)
@@ -97,11 +102,12 @@ public class CowService
     {
         ValidateCreateCow(dto);
         var normalizedTagNumber = dto.TagNumber.Trim();
-        await EnsureTagNumberIsUniqueAsync(normalizedTagNumber);
+        var userId = GetCurrentUserId();
+        await EnsureTagNumberIsUniqueAsync(normalizedTagNumber, userId);
 
         var cow = new Cow
         {
-            UserId = string.Empty,
+            UserId = userId,
             TagNumber = normalizedTagNumber,
             OwnerName = dto.OwnerName,
             LivestockGroup = dto.LivestockGroup,
@@ -156,12 +162,42 @@ public class CowService
 
     private async Task EnsureTagNumberIsUniqueAsync(string tagNumber, Guid? excludeCowId = null)
     {
+        var userId = GetCurrentUserId();
         var exists = await _context.Cows.AnyAsync(c =>
-            c.TagNumber == tagNumber && (!excludeCowId.HasValue || c.Id != excludeCowId.Value));
+            c.UserId == userId &&
+            c.TagNumber == tagNumber &&
+            (!excludeCowId.HasValue || c.Id != excludeCowId.Value));
 
         if (exists)
         {
             throw new ConflictException("Tag number already exists.");
         }
+    }
+
+    private async Task EnsureTagNumberIsUniqueAsync(string tagNumber, string userId, Guid? excludeCowId = null)
+    {
+        var exists = await _context.Cows.AnyAsync(c =>
+            c.UserId == userId &&
+            c.TagNumber == tagNumber &&
+            (!excludeCowId.HasValue || c.Id != excludeCowId.Value));
+
+        if (exists)
+        {
+            throw new ConflictException("Tag number already exists.");
+        }
+    }
+
+    private string GetCurrentUserId()
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? user?.FindFirstValue("sub");
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new InvalidOperationException("Authenticated user ID is missing.");
+        }
+
+        return userId;
     }
 }
