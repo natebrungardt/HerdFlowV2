@@ -68,34 +68,33 @@ function Dashboard() {
     () => [
       { label: "Active Herd", value: cows.length, to: "/cows" },
       {
-        label: "Needs Treatment",
-        value: cows.filter((cow) => cow.healthStatus !== "Healthy").length,
-        to: "/cows?filter=Needs%20Treatment",
+        label: "Calf Counter",
+        value: cows.filter((cow) => cow.hasCalf).length,
+        to: "/cows",
       },
       {
         label: "Breeding",
         value: cows.filter((cow) => cow.livestockGroup === "Breeding").length,
         to: "/cows?filter=Breeding",
       },
+      {
+        label: "Needs Treatment",
+        value: cows.filter((cow) => cow.healthStatus !== "Healthy").length,
+        to: "/cows?filter=Needs%20Treatment",
+      },
       { label: "Active Workdays", value: workdays.length, to: "/workdays" },
       { label: "Archived Cows", value: archivedCows.length, to: "/removed" },
-      {
-        label: "Archived Workdays",
-        value: archivedWorkdays.length,
-        to: "/workdays/removed",
-      },
     ],
-    [archivedCows.length, archivedWorkdays.length, cows, workdays.length],
+    [archivedCows.length, cows, workdays.length],
   );
 
   const upcomingWorkdays = useMemo(() => {
-    return [...workdays]
-      .sort((leftWorkday, rightWorkday) => {
-        return (
-          new Date(leftWorkday.date).getTime() -
-          new Date(rightWorkday.date).getTime()
-        );
-      });
+    return [...workdays].sort((leftWorkday, rightWorkday) => {
+      return (
+        new Date(leftWorkday.date).getTime() -
+        new Date(rightWorkday.date).getTime()
+      );
+    });
   }, [workdays]);
 
   const attentionCows = useMemo(() => {
