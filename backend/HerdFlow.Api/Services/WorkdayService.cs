@@ -116,11 +116,10 @@ public class WorkdayService
         }
 
         var userId = GetCurrentUserId();
-        var workday = await _context.Workdays
-            .Include(w => w.WorkdayCows)
-            .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
+        var workdayExists = await _context.Workdays
+            .AnyAsync(w => w.Id == id && w.UserId == userId);
 
-        if (workday == null)
+        if (!workdayExists)
         {
             throw new NotFoundException("Workday not found.");
         }
@@ -134,9 +133,10 @@ public class WorkdayService
             return;
         }
 
-        var existingCowIds = (workday.WorkdayCows ?? new List<WorkdayCow>())
+        var existingCowIds = await _context.WorkdayCows
+            .Where(wc => wc.WorkdayId == id)
             .Select(wc => wc.CowId)
-            .ToHashSet();
+            .ToHashSetAsync();
 
         var newCowIds = distinctCowIds
             .Where(cowId => !existingCowIds.Contains(cowId))
@@ -156,17 +156,13 @@ public class WorkdayService
             throw new ValidationException("One or more selected cows could not be added to the workday.");
         }
 
-        var workdayCows = workday.WorkdayCows ??= new List<WorkdayCow>();
-
-        foreach (var cowId in newCowIds)
+        var assignments = newCowIds.Select(cowId => new WorkdayCow
         {
-            workdayCows.Add(new WorkdayCow
-            {
-                WorkdayId = workday.Id,
-                Workday = workday,
-                CowId = cowId
-            });
-        }
+            WorkdayId = id,
+            CowId = cowId
+        });
+
+        _context.WorkdayCows.AddRange(assignments);
 
         try
         {
