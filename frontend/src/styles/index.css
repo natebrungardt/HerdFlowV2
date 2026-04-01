@@ -394,14 +394,16 @@ img {
 }
 
 .authPage {
-  min-height: 100vh;
+  min-height: 100svh;
   display: grid;
-  place-items: center;
-  padding: 32px;
+  align-content: center;
+  justify-items: center;
+  padding: clamp(12px, 1.6vh, 18px) 28px 8px;
 }
 
 .authShell {
-  width: min(1120px, 100%);
+  width: min(1080px, 100%);
+  min-height: 708px;
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
   background: var(--shell-bg);
@@ -432,8 +434,16 @@ img {
   grid-template-columns: 1fr;
 }
 
+.authPageSignup {
+  padding-top: clamp(8px, 1.1vh, 12px);
+}
+
+.authShellSignup {
+  min-height: min(668px, calc(100svh - 12px));
+}
+
 .authBrandPanel {
-  padding: 56px;
+  padding: 36px 40px;
   background:
     radial-gradient(circle at top left, rgba(176, 137, 104, 0.18), transparent 34%),
     radial-gradient(circle at bottom right, rgba(76, 122, 91, 0.2), transparent 32%),
@@ -441,29 +451,30 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 28px;
+  min-height: 100%;
+  gap: 18px;
 }
 
 .authBrandBadge {
   width: fit-content;
-  padding: 8px 14px;
+  padding: 7px 12px;
   border-radius: 999px;
   border: 1px solid var(--card-border);
   background: var(--surface-subtle);
   color: var(--text-muted-strong);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   letter-spacing: 0.02em;
 }
 
 .authBrandLockup {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .authBrandLogo {
-  width: 92px;
-  height: 92px;
+  width: 82px;
+  height: 82px;
   flex-shrink: 0;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.22));
 }
@@ -480,30 +491,30 @@ img {
 .authTitle {
   margin: 0;
   color: var(--text-primary);
-  font-size: clamp(2.4rem, 5vw, 4.5rem);
-  line-height: 0.98;
+  font-size: clamp(2rem, 4vw, 3.55rem);
+  line-height: 0.92;
   letter-spacing: -0.04em;
-  max-width: 11ch;
+  max-width: 11.5ch;
 }
 
 .authLead {
   margin: 0;
   max-width: 42ch;
   color: var(--text-secondary);
-  font-size: 1.05rem;
+  font-size: 0.96rem;
 }
 
 .authHighlightStrip {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .authHighlightPill {
   display: grid;
   gap: 2px;
-  min-width: 150px;
-  padding: 14px 16px;
+  min-width: 136px;
+  padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid var(--card-border);
   background: linear-gradient(
@@ -515,35 +526,37 @@ img {
 
 .authHighlightValue {
   color: var(--text-primary);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
 }
 
 .authHighlightLabel {
   color: var(--text-muted-strong);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
 }
 
 .authFeatureList {
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .authFeatureCard {
-  padding: 16px 18px;
+  padding: 11px 14px;
   border-radius: 18px;
   border: 1px solid var(--card-border);
   background: var(--surface-faint);
   color: var(--text-secondary);
+  font-size: 0.95rem;
   backdrop-filter: blur(8px);
 }
 
 .authFormPanel {
-  padding: 56px 44px;
+  padding: 36px 32px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 26px;
+  min-height: 100%;
+  gap: 16px;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.02) 0%,
@@ -557,9 +570,11 @@ img {
 
 .authFormCard {
   display: grid;
-  gap: 24px;
-  padding: 30px;
+  gap: 18px;
+  padding: 22px;
   border-radius: 28px;
+  box-sizing: border-box;
+  align-content: start;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.06) 0%,
@@ -572,9 +587,13 @@ img {
   backdrop-filter: blur(14px);
 }
 
+.authShell:not(.authShellSingle) .authFormCard {
+  height: 100%;
+}
+
 .authFormHeader {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .authFormKicker {
@@ -589,27 +608,28 @@ img {
 .authFormTitle {
   margin: 0;
   color: var(--text-primary);
-  font-size: 2rem;
-  line-height: 1.05;
+  font-size: 1.68rem;
+  line-height: 1;
 }
 
 .authFormCopy {
   margin: 0;
   color: var(--text-muted-strong);
+  font-size: 0.95rem;
 }
 
 .authModeSwitch {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  padding: 8px;
+  gap: 8px;
+  padding: 6px;
   border-radius: 18px;
   background: var(--surface-subtle);
   border: 1px solid var(--card-border);
 }
 
 .authModeButton {
-  min-height: 48px;
+  min-height: 44px;
   border-radius: 12px;
   background: transparent;
   color: var(--text-muted-strong);
@@ -632,18 +652,18 @@ img {
 
 .authFormFields {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .authField {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   color: var(--text-secondary);
   font-weight: 600;
 }
 
 .authInput {
-  min-height: 52px;
+  min-height: 48px;
   padding: 0 16px;
   border-radius: 16px;
   border: 1px solid var(--input-border);
@@ -685,6 +705,7 @@ img {
 
 .authActions {
   display: grid;
+  gap: 10px;
 }
 
 .authAuxiliaryActions {
@@ -712,7 +733,7 @@ img {
 }
 
 .authPrimaryButton {
-  min-height: 54px;
+  min-height: 50px;
   border-radius: 16px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 100%),
@@ -743,9 +764,181 @@ img {
   font-size: 0.92rem;
 }
 
+@media (min-width: 901px) {
+  .authShellSignup .authBrandPanel {
+    padding: 34px 38px;
+    gap: 18px;
+  }
+
+  .authShellSignup .authFormPanel {
+    padding: 34px 30px;
+    gap: 16px;
+  }
+
+  .authShellSignup .authFormCard {
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .authShellSignup .authTitle {
+    font-size: clamp(2.1rem, 4vw, 3.55rem);
+    line-height: 0.94;
+  }
+
+  .authShellSignup .authLead {
+    font-size: 0.96rem;
+  }
+
+  .authShellSignup .authHighlightStrip {
+    gap: 8px;
+  }
+
+  .authShellSignup .authHighlightPill {
+    min-width: 136px;
+    padding: 10px 12px;
+  }
+
+  .authShellSignup .authFeatureList {
+    gap: 10px;
+  }
+
+  .authShellSignup .authFeatureCard {
+    padding: 12px 14px;
+  }
+
+  .authShellSignup .authFormTitle {
+    font-size: 1.7rem;
+  }
+
+  .authShellSignup .authModeSwitch {
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .authShellSignup .authModeButton {
+    min-height: 44px;
+  }
+
+  .authShellSignup .authFormFields {
+    gap: 12px;
+  }
+
+  .authShellSignup .authField {
+    gap: 6px;
+  }
+
+  .authShellSignup .authInput {
+    min-height: 48px;
+  }
+
+  .authShellSignup .authPrimaryButton {
+    min-height: 50px;
+  }
+}
+
+@media (max-height: 860px) and (min-width: 901px) {
+  .authPage {
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+
+  .authShell {
+    min-height: 680px;
+    border-radius: 24px;
+  }
+
+  .authShell::before {
+    border-radius: 24px;
+  }
+
+  .authBrandPanel {
+    padding: 34px 38px;
+    gap: 18px;
+  }
+
+  .authFormPanel {
+    padding: 34px 30px;
+    gap: 16px;
+  }
+
+  .authFormCard {
+    gap: 18px;
+    padding: 22px;
+    border-radius: 24px;
+  }
+
+  .authTitle {
+    font-size: clamp(2.1rem, 4vw, 3.55rem);
+    line-height: 0.94;
+  }
+
+  .authLead {
+    font-size: 0.96rem;
+  }
+
+  .authHighlightStrip {
+    gap: 8px;
+  }
+
+  .authHighlightPill {
+    min-width: 136px;
+    padding: 10px 12px;
+  }
+
+  .authFeatureList {
+    gap: 8px;
+  }
+
+  .authFeatureCard {
+    padding: 10px 12px;
+  }
+
+  .authFormTitle {
+    font-size: 1.7rem;
+  }
+
+  .authModeSwitch {
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .authModeButton {
+    min-height: 44px;
+  }
+
+  .authFormFields {
+    gap: 12px;
+  }
+
+  .authField {
+    gap: 6px;
+  }
+
+  .authInput {
+    min-height: 48px;
+  }
+
+  .authPrimaryButton {
+    min-height: 50px;
+  }
+
+  .authPageSignup {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .authShellSignup {
+    min-height: min(644px, calc(100svh - 8px));
+  }
+}
+
 @media (max-width: 900px) {
   .authShell {
     grid-template-columns: 1fr;
+  }
+
+  .authPage {
+    padding: 24px;
   }
 
   .authBrandPanel,
