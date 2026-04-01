@@ -66,6 +66,11 @@ function Dashboard() {
 
   const dashboardStats = useMemo(
     () => [
+      {
+        label: "Calf Counter",
+        value: cows.filter((cow) => cow.hasCalf).length,
+        to: "/cows",
+      },
       { label: "Active Herd", value: cows.length, to: "/cows" },
       {
         label: "Calf Counter",
@@ -125,7 +130,7 @@ function Dashboard() {
         <div className="allCowsContent">
           <div className="allCowsHeader">
             <div className="titleBlock">
-              <h1 className="pageTitle">Dashboard</h1>
+              <h1 className="pageTitle">Herd Summary</h1>
               <p className="pageSubtitle">
                 Get a quick view of herd health, workday activity, and the
                 records that need attention.
