@@ -1,9 +1,13 @@
+using HerdFlow.Api.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace HerdFlow.Api.Migrations
 {
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20260401120000_EnableSupabaseRls")]
     public class EnableSupabaseRls : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
