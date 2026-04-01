@@ -2,14 +2,55 @@ import { createContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 
+const PASSWORD_RECOVERY_STORAGE_KEY = "herdflow-password-recovery";
+
+function hasRecoveryParams() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const searchParams = new URLSearchParams(window.location.search);
+
+  return (
+    hashParams.get("type") === "recovery" ||
+    searchParams.get("type") === "recovery"
+  );
+}
+
+function getStoredRecoveryFlag() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return window.sessionStorage.getItem(PASSWORD_RECOVERY_STORAGE_KEY) === "true";
+}
+
+function setStoredRecoveryFlag(isActive: boolean) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (isActive) {
+    window.sessionStorage.setItem(PASSWORD_RECOVERY_STORAGE_KEY, "true");
+    return;
+  }
+
+  window.sessionStorage.removeItem(PASSWORD_RECOVERY_STORAGE_KEY);
+}
+
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
+  isPasswordRecovery: boolean;
+  setPasswordRecovery: (isActive: boolean) => void;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
+  isPasswordRecovery: false,
+  setPasswordRecovery: () => {},
 });
 
 type AuthProviderProps = {
@@ -19,6 +60,9 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(
+    () => hasRecoveryParams() || getStoredRecoveryFlag(),
+  );
   const devAuthBypassEnabled =
     import.meta.env.DEV &&
     import.meta.env.VITE_DEV_AUTH_BYPASS === "true";
@@ -54,6 +98,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       setUser(session?.user ?? null);
+      if (hasRecoveryParams()) {
+        setStoredRecoveryFlag(true);
+        setIsPasswordRecovery(true);
+      } else if (!session) {
+        setStoredRecoveryFlag(false);
+        setIsPasswordRecovery(false);
+      }
       setLoading(false);
     };
 
@@ -61,12 +112,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isMounted) {
         return;
       }
 
       setUser(session?.user ?? null);
+
+      if (event === "PASSWORD_RECOVERY") {
+        setStoredRecoveryFlag(true);
+        setIsPasswordRecovery(true);
+      } else if (event === "USER_UPDATED" || event === "SIGNED_OUT") {
+        setStoredRecoveryFlag(false);
+        setIsPasswordRecovery(false);
+      } else if (!session && !hasRecoveryParams()) {
+        setStoredRecoveryFlag(false);
+        setIsPasswordRecovery(false);
+      }
+
       setLoading(false);
     });
 
@@ -77,7 +140,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [devAuthBypassEnabled]);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isPasswordRecovery,
+        setPasswordRecovery: (isActive) => {
+          setStoredRecoveryFlag(isActive);
+          setIsPasswordRecovery(isActive);
+        },
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
