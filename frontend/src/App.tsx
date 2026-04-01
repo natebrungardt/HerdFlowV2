@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AllCowPage from "./pages/cows/AllCowPage";
 import CowDetailPage from "./pages/cows/CowDetailPage";
 import Navbar from "./components/shared/Navbar";
@@ -18,7 +18,7 @@ import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 
 function App() {
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, isPasswordRecovery } = useContext(AuthContext);
 
   // Prevent flashing before auth resolves
   if (loading) {
@@ -32,7 +32,29 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="*" element={<AuthPage />} />
+            <Route
+              path="*"
+              element={
+                isPasswordRecovery ? (
+                  <Navigate to="/reset-password" replace />
+                ) : (
+                  <AuthPage />
+                )
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    );
+  }
+
+  if (isPasswordRecovery) {
+    return (
+      <ThemeProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="*" element={<Navigate to="/reset-password" replace />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

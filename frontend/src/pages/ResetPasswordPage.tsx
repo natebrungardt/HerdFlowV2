@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { AuthContext } from "../context/AuthContext";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
+  const { setPasswordRecovery } = useContext(AuthContext);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,12 +81,28 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    setMessage("Password updated. You can head back into HerdFlow now.");
+    const { error: signOutError } = await supabase.auth.signOut();
+
+    if (signOutError) {
+      setMessage(signOutError.message);
+      setMessageType("error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    setMessage("Password updated. Sign in with your new password.");
     setMessageType("success");
+    setPasswordRecovery(false);
     setIsSubmitting(false);
     window.setTimeout(() => {
       navigate("/");
     }, 1200);
+  };
+
+  const handleBackToAuth = async () => {
+    await supabase.auth.signOut();
+    setPasswordRecovery(false);
+    navigate("/");
   };
 
   return (
@@ -163,7 +181,9 @@ export default function ResetPasswordPage() {
             <div className="authAuxiliaryActions">
               <button
                 className="authTextButton"
-                onClick={() => navigate("/")}
+                onClick={() => {
+                  void handleBackToAuth();
+                }}
                 type="button"
               >
                 Back to HerdFlow

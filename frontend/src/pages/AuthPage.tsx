@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { supabase } from "../lib/supabase";
 
 export default function AuthPage() {
@@ -171,6 +172,22 @@ export default function AuthPage() {
     setIsSubmitting(false);
   };
 
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (mode === "login") {
+      await handleLogin();
+      return;
+    }
+
+    if (mode === "signup") {
+      await handleSignUp();
+      return;
+    }
+
+    await handleForgotPassword();
+  };
+
   return (
     <div className={mode === "signup" ? "authPage authPageSignup" : "authPage"}>
       <div
@@ -223,7 +240,7 @@ export default function AuthPage() {
         </section>
 
         <section className="authFormPanel">
-          <div className="authFormCard">
+          <form className="authFormCard" onSubmit={handleSubmit}>
             <div className="authFormHeader">
               <p className="authFormKicker">Welcome back</p>
               <h2 className="authFormTitle">Access your ranch dashboard</h2>
@@ -359,27 +376,24 @@ export default function AuthPage() {
               {mode === "login" ? (
                 <button
                   className="authPrimaryButton"
-                  onClick={handleLogin}
                   disabled={isSubmitting}
-                  type="button"
+                  type="submit"
                 >
                   {isSubmitting ? "Signing in..." : "Log In"}
                 </button>
               ) : mode === "forgot" ? (
                 <button
                   className="authPrimaryButton"
-                  onClick={handleForgotPassword}
                   disabled={isSubmitting || normalizedEmail.length === 0}
-                  type="button"
+                  type="submit"
                 >
                   {isSubmitting ? "Sending reset email..." : "Send Reset Link"}
                 </button>
               ) : (
                 <button
                   className="authPrimaryButton"
-                  onClick={handleSignUp}
                   disabled={isSubmitting}
-                  type="button"
+                  type="submit"
                 >
                   {isSubmitting ? "Creating account..." : "Create Account"}
                 </button>
@@ -407,7 +421,7 @@ export default function AuthPage() {
               Built for herd records, workday planning, and daily ranch follow
               through.
             </p>
-          </div>
+          </form>
         </section>
       </div>
     </div>
