@@ -172,8 +172,12 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="authPage">
-      <div className="authShell">
+    <div className={mode === "signup" ? "authPage authPageSignup" : "authPage"}>
+      <div
+        className={
+          mode === "signup" ? "authShell authShellSignup" : "authShell"
+        }
+      >
         <section className="authBrandPanel">
           <div className="authBrandBadge">Ranch workflow, cleaned up.</div>
           <div className="authBrandLockup">
