@@ -1,18 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
 export default function AuthPage() {
+  const [searchParams] = useSearchParams();
+  const requestedMode = searchParams.get("mode");
+  const urlMode =
+    requestedMode === "signup" || requestedMode === "login"
+      ? requestedMode
+      : "login";
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">(urlMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"error" | "success" | null>(
     null,
   );
+
+  useEffect(() => {
+    setMode(urlMode);
+    setMessage(null);
+    setMessageType(null);
+  }, [urlMode]);
 
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -190,6 +203,12 @@ export default function AuthPage() {
 
   return (
     <div className={mode === "signup" ? "authPage authPageSignup" : "authPage"}>
+      <Link className="authBackLink" to="/">
+        <span aria-hidden="true" className="authBackLinkIcon">
+          ←
+        </span>
+        Back to HerdFlow
+      </Link>
       <div
         className={
           mode === "signup" ? "authShell authShellSignup" : "authShell"
@@ -243,7 +262,7 @@ export default function AuthPage() {
           <form className="authFormCard" onSubmit={handleSubmit}>
             <div className="authFormHeader">
               <p className="authFormKicker">Welcome back</p>
-              <h2 className="authFormTitle">Access your ranch dashboard</h2>
+              <h2 className="authFormTitle">Sign in to your ranch</h2>
               <p className="authFormCopy">
                 {mode === "forgot"
                   ? "Enter your email and we will send you a password reset link."
