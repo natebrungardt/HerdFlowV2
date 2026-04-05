@@ -567,6 +567,15 @@ img {
   gap: 16px;
 }
 
+.landingPlatformNote {
+  margin: 14px 0 0;
+  color: #5c6b62;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .landingSecondaryButton {
   padding: 0 20px;
   border: 1px solid rgba(19, 32, 26, 0.14);
