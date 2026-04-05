@@ -54,6 +54,8 @@ export default function LandingPage() {
             </Link>
           </div>
 
+          <p className="landingPlatformNote">iOS coming soon</p>
+
           <div className="landingFeaturePills" aria-label="Key benefits">
             <span className="landingFeaturePill">Herd records</span>
             <span className="landingFeaturePill">Workday planning</span>
