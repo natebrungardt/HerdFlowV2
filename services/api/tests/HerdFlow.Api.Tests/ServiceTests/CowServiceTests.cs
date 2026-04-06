@@ -86,10 +86,43 @@ public class CowServiceTests
         var service = testContext.CreateCowService();
 
         await service.ArchiveCowAsync(cow.Id);
-        (await service.GetRemovedCowsAsync()).Should().ContainSingle(c => c.Id == cow.Id);
+        var removedCows = await service.GetRemovedCowsAsync();
+        removedCows.Should().ContainSingle(c => c.Id == cow.Id);
+        removedCows[0].RemovedAt.Should().NotBeNull();
 
         await service.RestoreCowAsync(cow.Id);
         (await service.GetRemovedCowsAsync()).Should().BeEmpty();
+
+        var restoredCow = await service.GetCowByIdAsync(cow.Id);
+        restoredCow.RemovedAt.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetRemovedCowsAsync_returns_most_recently_removed_first()
+    {
+        await using var testContext = new ServiceTestContext();
+        var olderRemovedCow = TestData.Cow(
+            "test-user",
+            "A-100",
+            isRemoved: true,
+            removedAt: new DateTime(2026, 4, 5, 13, 0, 0, DateTimeKind.Utc));
+        var newerRemovedCow = TestData.Cow(
+            "test-user",
+            "A-101",
+            isRemoved: true,
+            removedAt: new DateTime(2026, 4, 6, 13, 0, 0, DateTimeKind.Utc));
+        var legacyRemovedCow = TestData.Cow("test-user", "A-102", isRemoved: true);
+        testContext.DbContext.Cows.AddRange(olderRemovedCow, newerRemovedCow, legacyRemovedCow);
+        await testContext.DbContext.SaveChangesAsync();
+
+        var service = testContext.CreateCowService();
+
+        var removedCows = await service.GetRemovedCowsAsync();
+
+        removedCows.Select(cow => cow.Id).Should().ContainInOrder(
+            newerRemovedCow.Id,
+            olderRemovedCow.Id,
+            legacyRemovedCow.Id);
     }
 
     [Fact]

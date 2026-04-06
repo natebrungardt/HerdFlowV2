@@ -32,7 +32,8 @@ internal static class TestData
     public static Cow Cow(
         string userId,
         string tagNumber = "A-100",
-        bool isRemoved = false)
+        bool isRemoved = false,
+        DateTime? removedAt = null)
     {
         return new Cow
         {
@@ -46,6 +47,7 @@ internal static class TestData
             HeatStatus = HeatStatusType.WatchHeat,
             PregnancyStatus = "Open",
             IsRemoved = isRemoved,
+            RemovedAt = removedAt,
         };
     }
 

@@ -154,6 +154,7 @@ public class CowService
         var cow = await FindCowAsync(id);
 
         cow.IsRemoved = true;
+        cow.RemovedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         await _activityLogService.LogAsync(cow.Id, "Cow archived from herd");
     }
@@ -163,6 +164,8 @@ public class CowService
         var userId = GetCurrentUserId();
         return await _context.Cows
             .Where(c => c.UserId == userId && c.IsRemoved)
+            .OrderByDescending(c => c.RemovedAt.HasValue)
+            .ThenByDescending(c => c.RemovedAt)
             .ToListAsync();
     }
 
@@ -228,6 +231,7 @@ public class CowService
         var cow = await FindCowAsync(id);
 
         cow.IsRemoved = false;
+        cow.RemovedAt = null;
         await _context.SaveChangesAsync();
         await _activityLogService.LogAsync(cow.Id, "Cow restored to herd");
     }

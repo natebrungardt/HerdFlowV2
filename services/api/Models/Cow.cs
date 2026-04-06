@@ -45,6 +45,7 @@ public class Cow
     public DateOnly? SaleDate { get; set; }
 
     public bool IsRemoved { get; set; } = false;
+    public DateTime? RemovedAt { get; set; }
 
     public List<Note> Notes { get; set; } = new();
 

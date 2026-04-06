@@ -111,12 +111,49 @@ public class CowApiIntegrationTests
 
         var removedCows = await client.GetFromJsonAsync<List<Cow>>("/api/cows/removed", ApiJson.Options);
         removedCows.Should().ContainSingle(c => c.Id == cow.Id);
+        removedCows![0].RemovedAt.Should().NotBeNull();
 
         var restoreResponse = await client.PutAsync($"/api/cows/{cow.Id}/restore", null);
         restoreResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var activeCows = await client.GetFromJsonAsync<List<Cow>>("/api/cows", ApiJson.Options);
         activeCows.Should().ContainSingle(c => c.Id == cow.Id);
+
+        var restoredCow = await client.GetFromJsonAsync<Cow>($"/api/cows/{cow.Id}", ApiJson.Options);
+        restoredCow.Should().NotBeNull();
+        restoredCow!.RemovedAt.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetRemovedCows_returns_most_recently_removed_first_with_removed_at()
+    {
+        await using var factory = new HerdFlowApiFactory();
+        var olderRemovedCow = TestData.Cow(
+            "user-a",
+            "A-100",
+            isRemoved: true,
+            removedAt: new DateTime(2026, 4, 5, 13, 0, 0, DateTimeKind.Utc));
+        var newerRemovedCow = TestData.Cow(
+            "user-a",
+            "A-101",
+            isRemoved: true,
+            removedAt: new DateTime(2026, 4, 6, 13, 0, 0, DateTimeKind.Utc));
+        var legacyRemovedCow = TestData.Cow("user-a", "A-102", isRemoved: true);
+        await factory.SeedAsync(dbContext =>
+        {
+            dbContext.Cows.AddRange(olderRemovedCow, newerRemovedCow, legacyRemovedCow);
+            return Task.CompletedTask;
+        });
+        using var client = factory.CreateClientForUser("user-a");
+
+        var removedCows = await client.GetFromJsonAsync<List<Cow>>("/api/cows/removed", ApiJson.Options);
+
+        removedCows.Should().NotBeNull();
+        removedCows!.Select(cow => cow.Id).Should().ContainInOrder(
+            newerRemovedCow.Id,
+            olderRemovedCow.Id,
+            legacyRemovedCow.Id);
+        removedCows[0].RemovedAt.Should().NotBeNull();
     }
 
     [Fact]

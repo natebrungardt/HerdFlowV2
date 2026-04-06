@@ -13,6 +13,8 @@ type HerdListViewProps = {
   getCowHref: (cow: Cow) => string;
   emptyMessage?: string;
   sectionTitle?: string;
+  getCowSupplementaryMeta?: (cow: Cow) => string | null;
+  sortCows?: (cows: Cow[]) => Cow[];
 };
 
 type HerdStatFilter =
@@ -64,6 +66,34 @@ function normalizeSearchValue(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9\s]/g, "");
 }
 
+function defaultSortCows(cows: Cow[]) {
+  return [...cows].sort((leftCow, rightCow) => {
+    const leftTagNumber = getNormalizedTagNumber(leftCow.tagNumber);
+    const rightTagNumber = getNormalizedTagNumber(rightCow.tagNumber);
+
+    if (leftTagNumber === null && rightTagNumber !== null) {
+      return 1;
+    }
+
+    if (leftTagNumber !== null && rightTagNumber === null) {
+      return -1;
+    }
+
+    if (
+      leftTagNumber !== null &&
+      rightTagNumber !== null &&
+      leftTagNumber !== rightTagNumber
+    ) {
+      return leftTagNumber - rightTagNumber;
+    }
+
+    return leftCow.tagNumber.localeCompare(rightCow.tagNumber, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+  });
+}
+
 function HerdListView({
   cows,
   loading,
@@ -75,6 +105,8 @@ function HerdListView({
   getCowHref,
   emptyMessage = "No cows found.",
   sectionTitle = "Herd Records",
+  getCowSupplementaryMeta,
+  sortCows = defaultSortCows,
 }: HerdListViewProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
@@ -122,32 +154,8 @@ function HerdListView({
       return matchesSearch && matchesFilter;
     });
 
-    return [...matchingCows].sort((leftCow, rightCow) => {
-      const leftTagNumber = getNormalizedTagNumber(leftCow.tagNumber);
-      const rightTagNumber = getNormalizedTagNumber(rightCow.tagNumber);
-
-      if (leftTagNumber === null && rightTagNumber !== null) {
-        return 1;
-      }
-
-      if (leftTagNumber !== null && rightTagNumber === null) {
-        return -1;
-      }
-
-      if (
-        leftTagNumber !== null &&
-        rightTagNumber !== null &&
-        leftTagNumber !== rightTagNumber
-      ) {
-        return leftTagNumber - rightTagNumber;
-      }
-
-      return leftCow.tagNumber.localeCompare(rightCow.tagNumber, undefined, {
-        numeric: true,
-        sensitivity: "base",
-      });
-    });
-  }, [cows, searchTerm, selectedFilter]);
+    return sortCows(matchingCows);
+  }, [cows, searchTerm, selectedFilter, sortCows]);
 
   const stats = useMemo(
     () => [
@@ -244,6 +252,7 @@ function HerdListView({
                   cow.healthStatus === "Healthy"
                     ? "statusPill"
                     : "statusPill needsTreatment";
+                const supplementaryMeta = getCowSupplementaryMeta?.(cow);
 
                 return (
                   <Link
@@ -262,6 +271,9 @@ function HerdListView({
                       <div className="cowRowOwner">
                         Owner: {cow.ownerName || "Unknown owner"}
                       </div>
+                      {supplementaryMeta ? (
+                        <div className="cowRowOwner">{supplementaryMeta}</div>
+                      ) : null}
                     </div>
 
                     <div className="cowRowActions">
