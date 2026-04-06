@@ -10,8 +10,19 @@ import type { Workday } from "../types/workday";
 import "../styles/AllCows.css";
 import "../styles/CowDetailPage.css";
 
+function parseDateValue(dateValue: string) {
+  const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue);
+
+  if (dateOnlyMatch) {
+    const [, year, month, day] = dateOnlyMatch;
+    return new Date(Number(year), Number(month) - 1, Number(day), 12);
+  }
+
+  return new Date(dateValue);
+}
+
 function formatDateLabel(dateValue: string) {
-  const date = new Date(dateValue);
+  const date = parseDateValue(dateValue);
 
   if (Number.isNaN(date.getTime())) {
     return "Unknown date";
@@ -64,6 +75,30 @@ function Dashboard() {
     void loadDashboard();
   }, []);
 
+  const upcomingWorkdays = useMemo(() => {
+    return [...workdays].sort((leftWorkday, rightWorkday) => {
+      return (
+        parseDateValue(leftWorkday.date).getTime() -
+        parseDateValue(rightWorkday.date).getTime()
+      );
+    });
+  }, [workdays]);
+
+  const nextUpcomingWorkday = useMemo(() => {
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+
+    return (
+      upcomingWorkdays.find((workday) => {
+        return parseDateValue(workday.date).getTime() >= startOfToday.getTime();
+      }) ?? upcomingWorkdays[0]
+    );
+  }, [upcomingWorkdays]);
+
   const dashboardStats = useMemo(
     () => [
       {
@@ -82,20 +117,21 @@ function Dashboard() {
         value: cows.filter((cow) => cow.livestockGroup === "Breeding").length,
         to: "/cows?filter=Breeding",
       },
-      { label: "Active Workdays", value: workdays.length, to: "/workdays" },
+      {
+        className: "nextWorkdayCard",
+        label: "Next Workday",
+        value: nextUpcomingWorkday?.title ?? "No workday scheduled",
+        detail: nextUpcomingWorkday
+          ? formatDateLabel(nextUpcomingWorkday.date)
+          : "Create one to get started",
+        to: nextUpcomingWorkday
+          ? `/workdays/${nextUpcomingWorkday.id}`
+          : "/workdays/new",
+      },
       { label: "Archived Cows", value: archivedCows.length, to: "/removed" },
     ],
-    [archivedCows.length, cows, workdays.length],
+    [archivedCows.length, cows, nextUpcomingWorkday],
   );
-
-  const upcomingWorkdays = useMemo(() => {
-    return [...workdays].sort((leftWorkday, rightWorkday) => {
-      return (
-        new Date(leftWorkday.date).getTime() -
-        new Date(rightWorkday.date).getTime()
-      );
-    });
-  }, [workdays]);
 
   const attentionCows = useMemo(() => {
     return cows.filter((cow) => cow.healthStatus !== "Healthy");
@@ -145,11 +181,14 @@ function Dashboard() {
                 {dashboardStats.map((stat) => (
                   <Link
                     key={stat.label}
-                    className="statsCard statsLinkCard"
+                    className={`statsCard statsLinkCard ${stat.className ?? ""}`.trim()}
                     to={stat.to}
                   >
                     <div className="statLabel">{stat.label}</div>
                     <div className="statValue">{stat.value}</div>
+                    {"detail" in stat ? (
+                      <div className="statMeta">{stat.detail}</div>
+                    ) : null}
                   </Link>
                 ))}
               </div>
