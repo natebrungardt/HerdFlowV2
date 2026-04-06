@@ -234,7 +234,9 @@ function CowDetailPage() {
     if (!formData || !cow) return false;
 
     if (!TAG_NUMBER_PATTERN.test(formData.tagNumber.trim())) {
-      setError("Tag number can only include letters, numbers, and dashes.");
+      setError(
+        "Tag number can only include letters, numbers, and dashes. Spaces cannot be used.",
+      );
       return false;
     }
 

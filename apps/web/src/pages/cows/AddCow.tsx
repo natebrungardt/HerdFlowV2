@@ -101,7 +101,9 @@ function AddCowPage() {
     const normalizedTagNumber = formData.tagNumber.trim();
 
     if (!TAG_NUMBER_PATTERN.test(normalizedTagNumber)) {
-      setError("Tag number can only include letters, numbers, and dashes.");
+      setError(
+        "Tag number can only include letters, numbers, and dashes. Spaces cannot be used.",
+      );
       setSaving(false);
       return;
     }

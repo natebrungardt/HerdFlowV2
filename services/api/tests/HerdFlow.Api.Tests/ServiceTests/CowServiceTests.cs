@@ -29,7 +29,7 @@ public class CowServiceTests
         var action = () => service.CreateCowAsync(dto);
 
         await action.Should().ThrowAsync<ValidationException>()
-            .WithMessage("Tag number can only include letters, numbers, and dashes.");
+            .WithMessage("Tag number can only include letters, numbers, and dashes. Spaces cannot be used.");
     }
 
     [Fact]

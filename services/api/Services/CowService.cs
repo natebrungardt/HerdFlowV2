@@ -47,7 +47,7 @@ public class CowService
 
         if (!TagNumberPattern.IsMatch(dto.TagNumber.Trim()))
         {
-            throw new ValidationException("Tag number can only include letters, numbers, and dashes.");
+            throw new ValidationException("Tag number can only include letters, numbers, and dashes. Spaces cannot be used.");
         }
     }
 
