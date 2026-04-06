@@ -476,7 +476,7 @@ function CowDetailPage() {
               className="deleteButton deleteButtonCompact"
               onClick={() => setShowDeleteModal(true)}
             >
-              Remove Cow
+              Remove from Herd
             </button>
           )}
         </div>
