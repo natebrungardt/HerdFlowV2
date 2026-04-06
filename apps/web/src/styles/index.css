@@ -706,6 +706,109 @@ img {
   max-width: 26ch;
 }
 
+.landingFooter {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin: 24px auto 0;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid rgba(32, 47, 38, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 18px 36px rgba(34, 52, 41, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.landingFooterBrand,
+.landingFooterMeta,
+.landingFooterLinks {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.landingFooterBrand {
+  min-width: 0;
+}
+
+.landingFooterLogo {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  opacity: 0.92;
+}
+
+.landingFooterCopy {
+  display: grid;
+  gap: 2px;
+}
+
+.landingFooterName {
+  color: #16231d;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.landingFooterTagline,
+.landingFooterCopyright {
+  margin: 0;
+  color: #617066;
+  font-size: 0.9rem;
+}
+
+.landingFooterMeta {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.landingFooterLinks {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.landingFooterLink,
+.landingFooterButton {
+  min-height: 42px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.landingFooterLink {
+  color: #223129;
+}
+
+.landingFooterLink:hover {
+  color: #101a15;
+  transform: translateY(-1px);
+}
+
+.landingFooterButton {
+  border: 1px solid rgba(19, 32, 26, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 24px rgba(34, 52, 41, 0.08);
+}
+
+.landingFooterButton:hover {
+  border-color: rgba(19, 32, 26, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  transform: translateY(-1px);
+}
+
 .authPage {
   min-height: 100svh;
   display: grid;
@@ -1303,6 +1406,17 @@ img {
     min-height: 420px;
   }
 
+  .landingFooter {
+    padding: 16px 18px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .landingFooterMeta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .authShell {
     grid-template-columns: 1fr;
   }
@@ -1452,6 +1566,11 @@ img {
     border-radius: 26px;
   }
 
+  .landingFooterMeta,
+  .landingFooterLinks {
+    justify-content: flex-start;
+  }
+
   .navbar-left {
     font-size: 1.35rem;
   }
@@ -1521,7 +1640,8 @@ img {
   }
 
   .landingHeader,
-  .landingShowcaseCard {
+  .landingShowcaseCard,
+  .landingFooter {
     padding-inline: 14px;
   }
 
@@ -1541,6 +1661,15 @@ img {
 
   .landingShowcaseStat {
     justify-items: start;
+  }
+
+  .landingFooterLinks {
+    width: 100%;
+  }
+
+  .landingFooterLink,
+  .landingFooterButton {
+    flex: 1 1 160px;
   }
 }
 

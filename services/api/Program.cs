@@ -80,8 +80,13 @@ builder.Services.AddCors(options =>
                 .GetSection("Cors:AllowedOrigins")
                 .Get<string[]>();
 
+            if (allowedOrigins is null || allowedOrigins.Length == 0)
+            {
+                throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one origin.");
+            }
+
             policy
-                .WithOrigins(allowedOrigins ?? ["http://localhost:5173"])
+                .WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

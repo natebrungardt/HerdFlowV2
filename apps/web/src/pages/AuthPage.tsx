@@ -228,8 +228,8 @@ export default function AuthPage() {
             </div>
           </div>
           <p className="authLead">
-            Track cattle, workdays, notes, and daily ranch decisions from one
-            place that feels built for the way you actually work.
+            Track cattle, workdays, notes, and daily ranch decisions — replacing
+            your handwritten cattle notebook, calendar, or napkin.
           </p>
           <div className="authHighlightStrip">
             <div className="authHighlightPill">

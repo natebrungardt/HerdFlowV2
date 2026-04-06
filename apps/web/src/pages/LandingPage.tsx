@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import LandingFooter from "../components/shared/LandingFooter";
 
 export default function LandingPage() {
   return (
@@ -33,16 +34,15 @@ export default function LandingPage() {
         <section className="landingHeroContent">
           <div className="landingEyebrow">Built for working ranches</div>
           <div className="landingPain">
-            Stop losing track of your herd and workdays.
+            Most ranch software is complicated. This isn't.
           </div>
           <h1 className="landingTitle">
-            Run your entire ranch — cattle, workdays, and decisions — in one
-            place.
+            Finally, run your ranch without the complexity.
           </h1>
           <p className="landingLead">
-            Built with real ranchers. Track cattle, log workdays, and capture
-            notes in the field without losing anything — no spreadsheets, no
-            scattered notes.
+            Most cattle tracking tools are hard to use in the real world.
+            HerdFlow keeps it simple — track cattle, log workdays, and capture
+            notes without the headache.
           </p>
 
           <div className="landingActions">
@@ -55,6 +55,9 @@ export default function LandingPage() {
           </div>
 
           <p className="landingPlatformNote">iOS coming soon</p>
+          <p className="landingSimpleNote">
+            No training. No clutter. Just works.
+          </p>
 
           <div className="landingFeaturePills" aria-label="Key benefits">
             <span className="landingFeaturePill">Herd records</span>
@@ -107,6 +110,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+      <LandingFooter />
     </div>
   );
 }

@@ -110,12 +110,16 @@ public class WorkdayService
 
     public async Task AddCowsToWorkday(Guid id, List<Guid> cowIds)
     {
-        var userId = GetCurrentUserId();
-        var workday = await _context.Workdays
-            .Include(w => w.WorkdayCows)
-            .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
+        if (cowIds == null)
+        {
+            throw new ValidationException("cowIds is required.");
+        }
 
-        if (workday == null)
+        var userId = GetCurrentUserId();
+        var workdayExists = await _context.Workdays
+            .AnyAsync(w => w.Id == id && w.UserId == userId);
+
+        if (!workdayExists)
         {
             throw new NotFoundException("Workday not found.");
         }
@@ -129,9 +133,10 @@ public class WorkdayService
             return;
         }
 
-        var existingCowIds = workday.WorkdayCows
+        var existingCowIds = await _context.WorkdayCows
+            .Where(wc => wc.WorkdayId == id)
             .Select(wc => wc.CowId)
-            .ToHashSet();
+            .ToHashSetAsync();
 
         var newCowIds = distinctCowIds
             .Where(cowId => !existingCowIds.Contains(cowId))
@@ -151,28 +156,31 @@ public class WorkdayService
             throw new ValidationException("One or more selected cows could not be added to the workday.");
         }
 
-        foreach (var cowId in newCowIds)
+        var assignments = newCowIds.Select(cowId => new WorkdayCow
         {
-            workday.WorkdayCows.Add(new WorkdayCow
-            {
-                CowId = cowId
-            });
-        }
+            WorkdayId = id,
+            CowId = cowId
+        });
+
+        _context.WorkdayCows.AddRange(assignments);
 
         try
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateException ex) when (WasDuplicateWorkdayCowInsert(ex))
+        catch (DbUpdateException ex)
         {
-            var refreshedWorkday = await _context.Workdays
-                .Include(w => w.WorkdayCows)
-                .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
-
-            if (refreshedWorkday is not null &&
-                distinctCowIds.All(cowId => refreshedWorkday.WorkdayCows.Any(wc => wc.CowId == cowId)))
+            if (WasDuplicateWorkdayCowInsert(ex))
             {
-                return;
+                var refreshedWorkday = await _context.Workdays
+                    .Include(w => w.WorkdayCows)
+                    .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
+
+                if (refreshedWorkday is not null &&
+                    distinctCowIds.All(cowId => refreshedWorkday.WorkdayCows.Any(wc => wc.CowId == cowId)))
+                {
+                    return;
+                }
             }
 
             throw;
