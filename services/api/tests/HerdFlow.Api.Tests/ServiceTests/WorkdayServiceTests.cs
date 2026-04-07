@@ -124,4 +124,106 @@ public class WorkdayServiceTests
 
         testContext.DbContext.WorkdayCows.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task UpdateCowWorkdayStatus_sets_worked_status_when_checked()
+    {
+        await using var testContext = new ServiceTestContext();
+        var cow = TestData.Cow("test-user", "A-100");
+        var workday = new Workday
+        {
+            UserId = "test-user",
+            Title = "Morning Checks",
+            WorkdayCows = new List<WorkdayCow>
+            {
+                new() { CowId = cow.Id }
+            }
+        };
+
+        testContext.DbContext.Cows.Add(cow);
+        testContext.DbContext.Workdays.Add(workday);
+        await testContext.DbContext.SaveChangesAsync();
+
+        var service = testContext.CreateWorkdayService();
+
+        await service.UpdateCowWorkdayStatus(workday.Id, cow.Id, true);
+
+        testContext.DbContext.WorkdayCows.Should()
+            .ContainSingle(wc => wc.WorkdayId == workday.Id && wc.CowId == cow.Id && wc.Status == "Worked");
+    }
+
+    [Fact]
+    public async Task UpdateCowWorkdayStatus_clears_worked_status_when_unchecked()
+    {
+        await using var testContext = new ServiceTestContext();
+        var cow = TestData.Cow("test-user", "A-100");
+        var workday = new Workday
+        {
+            UserId = "test-user",
+            Title = "Morning Checks",
+            WorkdayCows = new List<WorkdayCow>
+            {
+                new() { CowId = cow.Id, Status = "Worked" }
+            }
+        };
+
+        testContext.DbContext.Cows.Add(cow);
+        testContext.DbContext.Workdays.Add(workday);
+        await testContext.DbContext.SaveChangesAsync();
+
+        var service = testContext.CreateWorkdayService();
+
+        await service.UpdateCowWorkdayStatus(workday.Id, cow.Id, false);
+
+        testContext.DbContext.WorkdayCows.Should()
+            .ContainSingle(wc => wc.WorkdayId == workday.Id && wc.CowId == cow.Id && wc.Status == null);
+    }
+
+    [Fact]
+    public async Task UpdateCowWorkdayStatus_rejects_assignment_for_another_users_workday()
+    {
+        await using var testContext = new ServiceTestContext();
+        var cow = TestData.Cow("other-user", "A-100");
+        var workday = new Workday
+        {
+            UserId = "other-user",
+            Title = "Morning Checks",
+            WorkdayCows = new List<WorkdayCow>
+            {
+                new() { CowId = cow.Id }
+            }
+        };
+
+        testContext.DbContext.Cows.Add(cow);
+        testContext.DbContext.Workdays.Add(workday);
+        await testContext.DbContext.SaveChangesAsync();
+
+        var service = testContext.CreateWorkdayService();
+
+        var action = () => service.UpdateCowWorkdayStatus(workday.Id, cow.Id, true);
+
+        await action.Should().ThrowAsync<NotFoundException>()
+            .WithMessage("Workday cow assignment not found.");
+    }
+
+    [Fact]
+    public async Task UpdateCowWorkdayStatus_throws_when_assignment_does_not_exist()
+    {
+        await using var testContext = new ServiceTestContext();
+        var workday = new Workday
+        {
+            UserId = "test-user",
+            Title = "Morning Checks"
+        };
+
+        testContext.DbContext.Workdays.Add(workday);
+        await testContext.DbContext.SaveChangesAsync();
+
+        var service = testContext.CreateWorkdayService();
+
+        var action = () => service.UpdateCowWorkdayStatus(workday.Id, Guid.NewGuid(), true);
+
+        await action.Should().ThrowAsync<NotFoundException>()
+            .WithMessage("Workday cow assignment not found.");
+    }
 }

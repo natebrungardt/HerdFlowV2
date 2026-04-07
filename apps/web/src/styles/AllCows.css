@@ -361,12 +361,20 @@
 
 .workdayRowCard {
   cursor: default;
+  gap: 14px;
 }
 
 .workdayRowCard:hover {
   transform: none;
   border-color: var(--card-border);
   box-shadow: var(--card-shadow);
+}
+
+.workdayRowCardWorked {
+  border-color: var(--success-border-subtle);
+  background:
+    linear-gradient(180deg, rgba(76, 122, 91, 0.12) 0%, rgba(76, 122, 91, 0.08) 100%),
+    var(--card-bg);
 }
 
 .cowRowMain {
@@ -411,6 +419,50 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+
+.workdayWorkedCheckboxLabel {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+.workdayWorkedCheckbox {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: #78c38c;
+  cursor: pointer;
+}
+
+.workdayWorkedCheckbox:disabled {
+  cursor: progress;
+}
+
+.workdayAssignedPill {
+  align-items: center;
+}
+
+.workdayAssignedPillWorked {
+  border-color: var(--success-border-subtle);
+  background:
+    linear-gradient(180deg, rgba(76, 122, 91, 0.12) 0%, rgba(76, 122, 91, 0.08) 100%),
+    var(--success-bg-subtle);
+}
+
+.workdayWorkedStatusText {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-note);
+}
+
+.workdayRowCardWorked .workdayWorkedStatusText {
+  color: #b9efc6;
+}
+
+.workdayRowCardWorked .cowRowTitle {
+  color: #e9fff0;
 }
 
 .workdayCreateLayout {
@@ -738,6 +790,11 @@
   .cowRowCard {
     padding: 16px;
     gap: 12px;
+  }
+
+  .workdayWorkedCheckbox {
+    width: 18px;
+    height: 18px;
   }
 
   .statusPill {

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "../../components/shared/Modal";
+import AssignedWorkdayCows from "../../components/workdays/AssignedWorkdayCows";
 import SelectedCowsSummary from "../../components/workdays/SelectedCowsSummary";
 import WorkdayCowSelector from "../../components/workdays/WorkdayCowSelector";
 import {
@@ -16,6 +17,7 @@ import {
   getWorkdayById,
   removeCowFromWorkday,
   restoreWorkday,
+  updateWorkdayCowStatus,
   updateWorkday,
 } from "../../services/workdayService";
 import type { Cow } from "../../types/cow";
@@ -76,6 +78,12 @@ function WorkdayPage() {
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [addingCows, setAddingCows] = useState(false);
+  const [updatingWorkedCowId, setUpdatingWorkedCowId] = useState<string | null>(
+    null,
+  );
+  const [removingAssignedCowId, setRemovingAssignedCowId] = useState<
+    string | null
+  >(null);
   const [pendingAssignedCowRemoval, setPendingAssignedCowRemoval] =
     useState<Cow | null>(null);
   const [pendingCowRemoval, setPendingCowRemoval] = useState<Cow | null>(null);
@@ -372,6 +380,7 @@ function WorkdayPage() {
     if (!workday) return;
 
     setError("");
+    setRemovingAssignedCowId(cowId);
 
     try {
       await removeCowFromWorkday(workday.id, cowId);
@@ -382,6 +391,53 @@ function WorkdayPage() {
           ? err.message
           : "Failed to remove cow from workday";
       setError(message);
+    } finally {
+      setRemovingAssignedCowId(null);
+    }
+  }
+
+  async function handleToggleWorked(cowId: string, isWorked: boolean) {
+    if (!workday) return;
+
+    const previousAssignments = workday.workdayCows ?? [];
+    const nextAssignments = previousAssignments.map((assignment) =>
+      assignment.cowId === cowId
+        ? {
+            ...assignment,
+            status: isWorked ? "Worked" : null,
+          }
+        : assignment,
+    );
+
+    setError("");
+    setUpdatingWorkedCowId(cowId);
+    setWorkday((current) =>
+      current
+        ? {
+            ...current,
+            workdayCows: nextAssignments,
+          }
+        : current,
+    );
+
+    try {
+      await updateWorkdayCowStatus(workday.id, cowId, isWorked);
+    } catch (err) {
+      setWorkday((current) =>
+        current
+          ? {
+              ...current,
+              workdayCows: previousAssignments,
+            }
+          : current,
+      );
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to update worked status";
+      setError(message);
+    } finally {
+      setUpdatingWorkedCowId(null);
     }
   }
 
@@ -509,9 +565,12 @@ function WorkdayPage() {
                 onCancel={handleBackClick}
               />
 
-              <SelectedCowsSummary
-                selectedCows={assignedCows}
+              <AssignedWorkdayCows
+                assignments={workday.workdayCows ?? []}
+                removingCowId={removingAssignedCowId}
+                updatingCowId={updatingWorkedCowId}
                 onRemove={promptAssignedCowRemoval}
+                onToggleWorked={handleToggleWorked}
               />
             </div>
 

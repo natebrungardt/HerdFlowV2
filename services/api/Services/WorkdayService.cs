@@ -213,6 +213,25 @@ public class WorkdayService
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateCowWorkdayStatus(Guid id, Guid cowId, bool isWorked)
+    {
+        var userId = GetCurrentUserId();
+        var workdayCow = await _context.WorkdayCows
+            .Include(wc => wc.Workday)
+            .FirstOrDefaultAsync(wc =>
+                wc.WorkdayId == id &&
+                wc.CowId == cowId &&
+                wc.Workday.UserId == userId);
+
+        if (workdayCow == null)
+        {
+            throw new NotFoundException("Workday cow assignment not found.");
+        }
+
+        workdayCow.Status = isWorked ? "Worked" : null;
+        await _context.SaveChangesAsync();
+    }
+
     // UPDATE - Archive Workday
     public async Task ArchiveWorkday(Guid id)
     {

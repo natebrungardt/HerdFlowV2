@@ -89,3 +89,14 @@ export async function removeCowFromWorkday(
     method: "DELETE",
   });
 }
+
+export async function updateWorkdayCowStatus(
+  id: string,
+  cowId: string,
+  isWorked: boolean,
+): Promise<void> {
+  await apiFetch(`${WORKDAY_API_BASE_PATH}/${id}/cows/${cowId}/status`, {
+    method: "PUT",
+    body: JSON.stringify({ isWorked }),
+  });
+}

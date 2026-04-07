@@ -72,6 +72,22 @@ public class WorkdayController : ControllerBase
         return NoContent();
     }
 
+    // PUT: api/workdays/{id}/cows/{cowId}/status
+    [HttpPut("{id:guid}/cows/{cowId:guid}/status")]
+    public async Task<ActionResult> UpdateCowWorkdayStatus(
+        Guid id,
+        Guid cowId,
+        [FromBody] UpdateWorkdayCowStatusDto dto)
+    {
+        if (dto == null)
+        {
+            throw new ValidationException("Workday cow status is required.");
+        }
+
+        await _service.UpdateCowWorkdayStatus(id, cowId, dto.IsWorked);
+        return NoContent();
+    }
+
     // PUT: api/workdays/{id}/archive
     [HttpPut("{id:guid}/archive")]
     public async Task<ActionResult> ArchiveWorkday(Guid id)
