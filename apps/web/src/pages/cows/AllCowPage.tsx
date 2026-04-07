@@ -5,6 +5,24 @@ import { getCows } from "../../services/cowService";
 import type { Cow } from "../../types/cow";
 import "../../styles/AllCows.css";
 
+function formatCreatedDate(dateValue: string | null | undefined) {
+  if (!dateValue) {
+    return null;
+  }
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
 function AllCowPage() {
   const [cows, setCows] = useState<Cow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +57,10 @@ function AllCowPage() {
       ctaLabel="+ Add Cow"
       onCtaClick={() => navigate("/add-cow")}
       getCowHref={(cow) => `/cows/${cow.id}`}
+      getCowSupplementaryMeta={(cow) => {
+        const formattedDate = formatCreatedDate(cow.createdAt);
+        return formattedDate ? `Date Added: ${formattedDate}` : null;
+      }}
     />
   );
 }

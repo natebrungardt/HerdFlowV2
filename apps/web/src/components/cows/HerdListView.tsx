@@ -311,7 +311,9 @@ function HerdListView({
                         Owner: {cow.ownerName || "Unknown owner"}
                       </div>
                       {supplementaryMeta ? (
-                        <div className="cowRowOwner">{supplementaryMeta}</div>
+                        <div className="cowRowSupplementaryMeta">
+                          {supplementaryMeta}
+                        </div>
                       ) : null}
                     </div>
 
